@@ -21,11 +21,6 @@ class User {
         if ($stmt->rowCount() == 1) {
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             if (password_verify($password, $user['password'])) {
-                // Update last login
-                $update_query = "UPDATE " . $this->table . " SET last_login = CURRENT_TIMESTAMP WHERE id = ?";
-                $update_stmt = $this->conn->prepare($update_query);
-                $update_stmt->execute([$user['id']]);
-                
                 return $user;
             }
         }
