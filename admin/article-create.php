@@ -73,7 +73,7 @@ if ($_POST) {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="../public/css/admin.css" rel="stylesheet">
     <link href="../public/css/editor.css" rel="stylesheet">
-    <!-- CodePen Editor CSS -->
+    <!-- Content Blocks Editor -->
     <style>
         .editor-container {
             border: 2px solid #dee2e6;
@@ -204,22 +204,10 @@ if ($_POST) {
                                         </div>
                                         
                                         <div class="mb-3">
-                                            <label class="form-label">Content *</label>
-                                            <div class="editor-container">
-                                                <div class="editor-toolbar">
-                                                    <button type="button" onclick="formatText('bold')"><i class="fas fa-bold"></i></button>
-                                                    <button type="button" onclick="formatText('italic')"><i class="fas fa-italic"></i></button>
-                                                    <button type="button" onclick="formatText('underline')"><i class="fas fa-underline"></i></button>
-                                                    <button type="button" onclick="formatText('insertOrderedList')"><i class="fas fa-list-ol"></i></button>
-                                                    <button type="button" onclick="formatText('insertUnorderedList')"><i class="fas fa-list-ul"></i></button>
-                                                    <button type="button" onclick="insertLink()"><i class="fas fa-link"></i></button>
-                                                    <button type="button" onclick="formatText('insertHorizontalRule')"><i class="fas fa-minus"></i></button>
-                                                </div>
-                                                <div class="editor-content" contenteditable="true" id="contentEditor">
-                                                    <?php echo isset($_POST['content']) ? $_POST['content'] : ''; ?>
-                                                </div>
-                                            </div>
-                                            <textarea name="content" id="hiddenContent" style="display:none;" required></textarea>
+                                            <label class="form-label">Article Content *</label>
+                                            <p class="text-muted mb-3">Use the content blocks below to create rich articles with text, images, videos, and quotes.</p>
+                                            <div id="content-blocks-editor"></div>
+                                            <textarea name="content" id="finalContent" style="display:none;" required></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -261,10 +249,19 @@ if ($_POST) {
                                         </div>
                                         
                                         <div class="mb-3">
-                                            <label for="featured_image" class="form-label">Featured Image URL</label>
-                                            <input type="url" class="form-control" id="featured_image" name="featured_image" 
-                                                   value="<?php echo isset($_POST['featured_image']) ? htmlspecialchars($_POST['featured_image']) : ''; ?>">
-                                            <small class="text-muted">Enter image URL or use media library</small>
+                                            <label for="featured_image" class="form-label">Featured Image</label>
+                                            <div class="featured-image-upload">
+                                                <div class="upload-area" id="featuredImageUpload">
+                                                    <div class="upload-placeholder">
+                                                        <i class="fas fa-image"></i>
+                                                        <p>Click to upload featured image</p>
+                                                        <p class="text-muted">Recommended: 1200x600px</p>
+                                                    </div>
+                                                </div>
+                                                <input type="file" id="featuredImageFile" accept="image/*" style="display: none;">
+                                                <input type="hidden" name="featured_image" id="featuredImageUrl" 
+                                                       value="<?php echo isset($_POST['featured_image']) ? htmlspecialchars($_POST['featured_image']) : ''; ?>">
+                                            </div>
                                         </div>
                                         
                                         <div class="mb-3">
@@ -303,32 +300,91 @@ if ($_POST) {
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../public/js/admin.js"></script>
+    <script src="../public/js/content-blocks.js"></script>
     <script>
-        // Simple rich text editor functionality
-        function formatText(command) {
-            document.execCommand(command, false, null);
-            document.getElementById('contentEditor').focus();
-        }
+        // Featured Image Upload Handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const featuredImageUpload = document.getElementById('featuredImageUpload');
+            const featuredImageFile = document.getElementById('featuredImageFile');
+            const featuredImageUrl = document.getElementById('featuredImageUrl');
+            
+            if (featuredImageUpload && featuredImageFile) {
+                featuredImageUpload.onclick = function() {
+                    featuredImageFile.click();
+                };
+                
+                featuredImageFile.onchange = async function() {
+                    const file = this.files[0];
+                    if (!file) return;
+                    
+                    featuredImageUpload.innerHTML = '<div class="upload-progress"><i class="fas fa-spinner fa-spin"></i> Uploading...</div>';
+                    
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    
+                    try {
+                        const response = await fetch('upload-image.php', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            featuredImageUpload.innerHTML = `<img src="${result.url}" alt="Featured image" style="max-width: 100%; height: auto;">`;
+                            featuredImageUrl.value = result.url;
+                        } else {
+                            featuredImageUpload.innerHTML = `<div class="upload-error"><i class="fas fa-exclamation-triangle"></i><p>Upload failed: ${result.message}</p></div>`;
+                        }
+                    } catch (error) {
+                        featuredImageUpload.innerHTML = `<div class="upload-error"><i class="fas fa-exclamation-triangle"></i><p>Upload failed: Network error</p></div>`;
+                    }
+                };
+            }
+            
+            // Form Submission Handler
+            const form = document.querySelector('form[data-validate]');
+            if (form) {
+                form.onsubmit = function(e) {
+                    // Collect content from blocks editor
+                    if (typeof contentEditor !== 'undefined') {
+                        const blocks = contentEditor.getContent();
+                        const contentJson = JSON.stringify(blocks);
+                        document.getElementById('finalContent').value = contentJson;
+                    }
+                    
+                    // Validate required fields
+                    const title = document.getElementById('title').value.trim();
+                    const finalContent = document.getElementById('finalContent').value.trim();
+                    
+                    if (!title) {
+                        alert('Please enter a title.');
+                        e.preventDefault();
+                        return false;
+                    }
+                    
+                    if (!finalContent || finalContent === '[]') {
+                        alert('Please add some content to your article.');
+                        e.preventDefault();
+                        return false;
+                    }
+                    
+                    return true;
+                };
+            }
+        });
         
-        function insertLink() {
-            const url = prompt('Enter URL:');
-            if (url) {
-                document.execCommand('createLink', false, url);
+        // Schedule Options Toggle
+        function toggleScheduleOptions() {
+            const status = document.getElementById('status').value;
+            const scheduleOptions = document.getElementById('scheduleOptions');
+            if (status === 'scheduled') {
+                scheduleOptions.style.display = 'block';
+            } else {
+                scheduleOptions.style.display = 'none';
             }
         }
-        
-        // Update hidden textarea with editor content
-        document.getElementById('contentEditor').addEventListener('input', function() {
-            document.getElementById('hiddenContent').value = this.innerHTML;
-        });
-        
-        // Initialize content
-        document.addEventListener('DOMContentLoaded', function() {
-            const editor = document.getElementById('contentEditor');
-            const hidden = document.getElementById('hiddenContent');
-            hidden.value = editor.innerHTML;
-        });
     </script>
-    <script src="../public/js/admin.js"></script>
 </body>
 </html>
