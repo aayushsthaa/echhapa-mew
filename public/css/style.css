@@ -213,26 +213,28 @@ body {
 
 .section-title {
     font-family: var(--font-family);
-    font-weight: bold;
-    font-size: 1.4rem;
+    font-weight: 900;
+    font-size: 1.5rem;
     margin-bottom: 1rem;
-    color: var(--newspaper-black);
+    background: var(--newspaper-black);
+    color: var(--newspaper-white);
+    padding: 0.6rem 1rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    border-bottom: 3px solid var(--newspaper-black);
-    padding-bottom: 0.5rem;
-    display: inline-block;
+    letter-spacing: 2px;
+    text-align: center;
+    width: 100%;
+    display: block;
 }
 
 .breaking-section .section-title {
-    color: var(--newspaper-red);
-    border-bottom-color: var(--newspaper-red);
+    background: var(--newspaper-red);
+    color: var(--newspaper-white);
 }
 
 /* Newspaper Articles */
 .newspaper-article {
     background: var(--newspaper-white);
-    border: 1px solid var(--newspaper-border);
+    border: 2px solid var(--newspaper-black);
     margin-bottom: 1rem;
     overflow: hidden;
 }
@@ -245,7 +247,8 @@ body {
 
 .newspaper-article .article-image img {
     width: 100%;
-    height: auto;
+    height: 180px;
+    object-fit: cover;
     display: block;
 }
 
@@ -286,9 +289,13 @@ body {
 }
 
 .article-meta .category {
-    font-weight: bold;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    padding: 0.2rem 0.5rem;
+    background: var(--newspaper-light-gray);
+    border: 1px solid var(--newspaper-border);
     color: var(--newspaper-black);
 }
 
@@ -322,6 +329,39 @@ body {
 
 .article-content h5 {
     font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.6rem;
+}
+
+.article-content h5 a {
+    color: var(--newspaper-black);
+    text-decoration: none;
+}
+
+.article-content h5 a:hover {
+    text-decoration: underline;
+}
+
+.article-content p {
+    color: var(--newspaper-gray);
+    line-height: 1.5;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
+    font-family: var(--font-family-sans);
+}
+
+.article-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--newspaper-muted);
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--newspaper-border);
+    font-family: var(--font-family-sans);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .article-content h6 {

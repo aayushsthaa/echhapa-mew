@@ -88,51 +88,54 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    <div class="d-flex align-items-center mb-4">
-                        <span class="badge me-3" style="background-color: <?php echo htmlspecialchars($category['color']); ?>; font-size: 1rem; padding: 0.5rem 1rem;">
-                            <?php echo htmlspecialchars($category['name']); ?>
-                        </span>
-                        <div>
-                            <h2 class="mb-1"><?php echo htmlspecialchars($category['name']); ?> News</h2>
-                            <?php if ($category['description']): ?>
-                                <p class="text-muted mb-0"><?php echo htmlspecialchars($category['description']); ?></p>
-                            <?php endif; ?>
-                        </div>
+                    <!-- Category Header -->
+                    <div class="newspaper-section">
+                        <h3 class="section-title" style="background-color: <?php echo htmlspecialchars($category['color']); ?>">
+                            <?php echo htmlspecialchars($category['name']); ?> News
+                        </h3>
+                        <?php if ($category['description']): ?>
+                            <p class="category-description"><?php echo htmlspecialchars($category['description']); ?></p>
+                        <?php endif; ?>
                     </div>
                     
                     <?php if (empty($articles)): ?>
                         <div class="text-center py-5">
-                            <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
                             <h4>No articles in this category</h4>
                             <p class="text-muted">Check back later for updates</p>
-                            <a href="index.php" class="btn btn-primary">Back to Home</a>
+                            <a href="index.php" class="category-item">Back to Home</a>
                         </div>
                     <?php else: ?>
-                        <div class="row">
+                        <!-- Newspaper-style Article List -->
+                        <div class="list-layout">
                             <?php foreach ($articles as $article_item): ?>
-                            <div class="col-md-6 col-lg-4 mb-4">
-                                <article class="news-item">
+                            <article class="list-item">
+                                <div class="row align-items-center">
                                     <?php if ($article_item['featured_image']): ?>
-                                    <div class="article-image">
-                                        <img src="<?php echo htmlspecialchars($article_item['featured_image']); ?>" 
-                                             alt="<?php echo htmlspecialchars($article_item['title']); ?>">
-                                        <?php if ($article_item['is_breaking']): ?>
-                                        <span class="breaking-badge">Breaking</span>
-                                        <?php endif; ?>
+                                    <div class="col-md-3">
+                                        <div class="article-image">
+                                            <img src="<?php echo htmlspecialchars($article_item['featured_image']); ?>" 
+                                                 alt="<?php echo htmlspecialchars($article_item['title']); ?>">
+                                            <?php if ($article_item['is_breaking']): ?>
+                                            <span class="breaking-badge">Breaking</span>
+                                            <?php endif; ?>
+                                        </div>
                                     </div>
                                     <?php endif; ?>
-                                    <div class="article-content">
-                                        <div class="article-meta">
-                                            <span class="date"><?php echo date('M j, Y', strtotime($article_item['published_at'] ?? $article_item['created_at'])); ?></span>
-                                        </div>
-                                        <h5><a href="article.php?slug=<?php echo $article_item['slug']; ?>"><?php echo htmlspecialchars($article_item['title']); ?></a></h5>
-                                        <p><?php echo htmlspecialchars(substr($article_item['excerpt'] ?? $article_item['content'], 0, 150)) . '...'; ?></p>
-                                        <div class="article-stats">
-                                            <span><i class="fas fa-eye"></i> <?php echo number_format($article_item['views']); ?></span>
+                                    <div class="col-md-<?php echo $article_item['featured_image'] ? '9' : '12'; ?>">
+                                        <div class="article-content">
+                                            <div class="article-meta">
+                                                <span class="category" style="color: <?php echo htmlspecialchars($category['color']); ?>">
+                                                    <?php echo htmlspecialchars($category['name']); ?>
+                                                </span>
+                                                <span class="date"><?php echo date('M j, Y', strtotime($article_item['published_at'] ?? $article_item['created_at'])); ?></span>
+                                                <span class="views"><?php echo number_format($article_item['views']); ?> views</span>
+                                            </div>
+                                            <h5><a href="article.php?slug=<?php echo $article_item['slug']; ?>"><?php echo htmlspecialchars($article_item['title']); ?></a></h5>
+                                            <p><?php echo htmlspecialchars(substr($article_item['excerpt'] ?? $article_item['content'], 0, 120)) . '...'; ?></p>
                                         </div>
                                     </div>
-                                </article>
-                            </div>
+                                </div>
+                            </article>
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
