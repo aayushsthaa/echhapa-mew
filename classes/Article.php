@@ -225,5 +225,21 @@ class Article {
         $stmt->execute([$limit]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getPopularArticles($limit = 5) {
+        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color,
+                         u.first_name, u.last_name
+                  FROM " . $this->table . " a
+                  LEFT JOIN categories c ON a.category_id = c.id
+                  LEFT JOIN users u ON a.author_id = u.id
+                  WHERE a.status = 'published'
+                  AND (a.published_at IS NULL OR a.published_at <= CURRENT_TIMESTAMP)
+                  ORDER BY a.views DESC, a.published_at DESC
+                  LIMIT ?";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([$limit]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>
