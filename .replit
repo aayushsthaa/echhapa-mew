@@ -7,8 +7,8 @@ modules = ["php-8.2", "nodejs-20", "web", "nix", "postgresql-16"]
 channel = "stable-25_05"
 
 [deployment]
-run = ["php", "-S", "0.0.0.0:8000", "-t", "."]
-deploymentTarget = "cloudrun"
+run = ["php", "-S", "0.0.0.0:5000"]
+deploymentTarget = "autoscale"
 
 [[ports]]
 localPort = 8000
@@ -39,7 +39,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "./start_server.sh"
+args = "php -S 0.0.0.0:5000"
 waitForPort = 5000
 
 [workflows.workflow.metadata]
