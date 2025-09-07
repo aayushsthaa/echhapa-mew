@@ -3,6 +3,8 @@ require_once '../includes/auth_check.php';
 require_once '../classes/Article.php';
 
 $article = new Article();
+$db = new Database();
+$conn = $db->getConnection();
 
 // Handle bulk actions
 if ($_POST && isset($_POST['bulk_action']) && isset($_POST['article_ids'])) {

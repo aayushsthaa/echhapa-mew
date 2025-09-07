@@ -1,0 +1,238 @@
+/* Custom Text Editor Styles */
+.editor-container {
+    max-width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+}
+
+.editor-toolbar {
+    background: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+}
+
+.editor-btn {
+    border: none;
+    background: transparent;
+    padding: 8px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #333;
+    font-size: 14px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+}
+
+.editor-btn:hover {
+    background: #e9ecef;
+}
+
+.editor-btn.active {
+    background: #007bff;
+    color: white;
+}
+
+.editor-separator {
+    width: 1px;
+    height: 20px;
+    background: #ddd;
+    margin: 0 5px;
+}
+
+.editor-select {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px 8px;
+    background: white;
+    font-size: 14px;
+}
+
+.editor-content {
+    min-height: 400px;
+    padding: 15px;
+    outline: none;
+    font-family: 'Georgia', serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+}
+
+.editor-content:empty::before {
+    content: "Start writing your article...";
+    color: #999;
+}
+
+.editor-content h1,
+.editor-content h2,
+.editor-content h3,
+.editor-content h4,
+.editor-content h5,
+.editor-content h6 {
+    margin: 1.5em 0 0.5em 0;
+    font-weight: 600;
+}
+
+.editor-content p {
+    margin: 1em 0;
+}
+
+.editor-content ul,
+.editor-content ol {
+    padding-left: 30px;
+    margin: 1em 0;
+}
+
+.editor-content blockquote {
+    border-left: 4px solid #007bff;
+    margin: 1em 0;
+    padding-left: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+.editor-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin: 1em 0;
+}
+
+.editor-content pre {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 14px;
+}
+
+.editor-content code {
+    background: #f8f9fa;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 14px;
+}
+
+.editor-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0;
+}
+
+.editor-content table th,
+.editor-content table td {
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.editor-content table th {
+    background: #f8f9fa;
+    font-weight: 600;
+}
+
+/* Media Upload Area */
+.media-upload-area {
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    padding: 40px 20px;
+    text-align: center;
+    margin: 20px 0;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.media-upload-area:hover {
+    border-color: #007bff;
+    background: #f8f9fa;
+}
+
+.media-upload-area.dragover {
+    border-color: #007bff;
+    background: #e3f2fd;
+}
+
+.upload-icon {
+    font-size: 48px;
+    color: #ccc;
+    margin-bottom: 15px;
+}
+
+.upload-text {
+    color: #666;
+    font-size: 16px;
+}
+
+.upload-hint {
+    color: #999;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Modal Styles */
+.editor-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.editor-modal-content {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.editor-modal-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.editor-modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.editor-modal-close {
+    border: none;
+    background: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.editor-modal-close:hover {
+    color: #333;
+}
