@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/auth_check.php';
+require_once '../classes/Article.php';
 
 // Get categories
 $db = new Database();
