@@ -200,6 +200,33 @@ body {
     background: var(--newspaper-white);
 }
 
+.main-content .container-fluid {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.main-content .row {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+    gap: 0;
+}
+
+.main-content .row > * {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+/* Better column spacing */
+.col-lg-8 {
+    padding-right: 1.5rem;
+}
+
+.col-lg-4 {
+    padding-left: 1rem;
+}
+
 /* Newspaper Section Styles */
 .newspaper-section {
     margin-bottom: 2rem;
@@ -245,11 +272,38 @@ body {
     width: 100%;
 }
 
+/* Responsive image sizing for different layouts */
 .newspaper-article .article-image img {
     width: 100%;
-    height: 180px;
+    height: auto;
+    min-height: 120px;
+    max-height: 200px;
     object-fit: cover;
     display: block;
+}
+
+/* Grid layout images */
+.newspaper-section.featured-section .newspaper-article .article-image img,
+.newspaper-section.trending-section .newspaper-article .article-image img {
+    height: 180px;
+}
+
+/* List layout images - smaller */
+.list-layout .article-image img {
+    height: 100px;
+    max-height: 100px;
+}
+
+/* Small featured images */
+.featured-small .article-image img {
+    height: 80px;
+    max-height: 80px;
+}
+
+/* Category section images */
+.category-item .article-image img {
+    height: 120px;
+    max-height: 120px;
 }
 
 .main-article .article-image {
@@ -377,28 +431,7 @@ body {
     text-decoration: underline;
 }
 
-.article-content p {
-    color: var(--newspaper-text);
-    margin-bottom: 0.8rem;
-    line-height: 1.4;
-    font-size: 0.95rem;
-}
-
-.article-stats {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    font-size: 0.75rem;
-    color: var(--newspaper-muted);
-    margin-top: 0.5rem;
-    font-family: var(--font-family-sans);
-}
-
-.article-stats span {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
+/* Remove duplicate styles - already defined above */
 
 /* Newspaper Small Articles */
 .featured-small,
@@ -576,18 +609,19 @@ body {
 .ad-placeholder {
     text-align: center;
     padding: 2rem 1rem;
-    background: var(--light-color);
-    border: 2px dashed var(--border-color);
+    background: var(--newspaper-light-gray);
+    border: 2px dashed var(--newspaper-border);
     border-radius: 8px;
-    color: var(--text-muted);
+    color: var(--newspaper-muted);
 }
 
 /* Footer */
 .main-footer {
-    background: var(--dark-color);
-    color: var(--white);
+    background: var(--newspaper-dark-gray);
+    color: var(--newspaper-white);
     padding: 2rem 0;
     margin-top: 3rem;
+    border-top: 3px solid var(--newspaper-black);
 }
 
 .main-footer a {
@@ -597,27 +631,87 @@ body {
 }
 
 .main-footer a:hover {
-    color: var(--white);
+    color: var(--newspaper-white);
+}
+
+/* List Layout Styles */
+.list-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.list-item {
+    background: var(--newspaper-white);
+    border: 1px solid var(--newspaper-border);
+    padding: 1rem;
+    transition: all 0.2s ease;
+}
+
+.list-item:hover {
+    border-color: var(--newspaper-black);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.list-item .article-image {
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.list-item .article-content h5 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.list-item .article-content p {
+    font-size: 0.9rem;
+    color: var(--newspaper-gray);
+    margin-bottom: 0.5rem;
+}
+
+/* Category Section Improvements */
+.category-section {
+    margin-bottom: 2.5rem;
+}
+
+.category-section .section-title {
+    background: transparent;
+    color: var(--newspaper-black);
+    text-align: left;
+    padding: 0.5rem 0;
+    border-bottom: 3px solid var(--newspaper-black);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.3rem;
+}
+
+.category-section .view-all {
+    font-size: 0.8rem;
+    color: var(--newspaper-blue);
+    text-decoration: none;
+    font-weight: normal;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.category-section .view-all:hover {
+    text-decoration: underline;
 }
 
 /* Responsive Design */
 @media (max-width: 991.98px) {
-    .topbar-left,
-    .topbar-right {
-        text-align: center;
-        margin-bottom: 0.5rem;
+    .col-lg-8 {
+        padding-right: 0.5rem;
     }
     
-    .topbar-right {
-        margin-bottom: 0;
-    }
-    
-    .navbar-brand h2 {
-        font-size: 1.5rem;
+    .col-lg-4 {
+        padding-left: 0.5rem;
     }
     
     .main-content {
-        padding: 1.5rem 0;
+        padding: 1rem 0;
     }
     
     .sidebar {
@@ -625,12 +719,12 @@ body {
         margin-top: 2rem;
     }
     
-    .featured-article .article-image {
-        height: 250px;
+    .newspaper-article .article-image img {
+        height: 150px;
     }
     
-    .news-item .article-image {
-        height: 180px;
+    .list-item .article-image img {
+        height: 80px;
     }
 }
 
