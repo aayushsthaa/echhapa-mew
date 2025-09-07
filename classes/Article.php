@@ -59,12 +59,30 @@ class Article {
         $stmt->execute([$slug]);
         
         if ($stmt->rowCount() > 0) {
-            // Increment views
-            $update_query = "UPDATE " . $this->table . " SET views = views + 1 WHERE slug = ?";
-            $update_stmt = $this->conn->prepare($update_query);
-            $update_stmt->execute([$slug]);
+            $article = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+            // Proper view tracking with session tracking to avoid duplicate views
+            if (!isset($_SESSION['viewed_articles'])) {
+                $_SESSION['viewed_articles'] = [];
+            }
+            
+            if (!in_array($article['id'], $_SESSION['viewed_articles'])) {
+                // Update view count and last view time
+                $update_query = "UPDATE " . $this->table . " 
+                                SET views = views + 1, 
+                                    last_view_update = CURRENT_TIMESTAMP 
+                                WHERE slug = ?";
+                $update_stmt = $this->conn->prepare($update_query);
+                $update_stmt->execute([$slug]);
+                
+                // Mark as viewed in session
+                $_SESSION['viewed_articles'][] = $article['id'];
+                
+                // Update the view count in the returned data
+                $article['views'] = $article['views'] + 1;
+            }
+            
+            return $article;
         }
         return false;
     }
