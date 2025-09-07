@@ -2,13 +2,13 @@
 require_once 'config/config.php';
 require_once 'classes/Article.php';
 
-$article = new Article();
+$articleClass = new Article();
 
 // Get different types of content for modern layout
-$breaking_news = $article->getBreakingNews(3);
-$featured_articles = $article->getFeaturedArticles(6);
-$latest_articles = $article->getLatestArticles(8);
-$trending_articles = $article->getTrendingArticles(5);
+$breaking_news = $articleClass->getBreakingNews(3);
+$featured_articles = $articleClass->getFeaturedArticles(6);
+$latest_articles = $articleClass->getLatestArticles(8);
+$trending_articles = $articleClass->getTrendingArticles(5);
 
 // Get categories for navigation
 $db = new Database();
@@ -236,7 +236,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                         <!-- Category Sections -->
                         <?php foreach ($homepage_categories as $category): ?>
                         <?php 
-                        $category_articles = $article->getPublishedArticles(4, 0, $category['id']);
+                        $category_articles = $articleClass->getPublishedArticles(4, 0, $category['id']);
                         if (!empty($category_articles)): 
                         ?>
                         <section class="category-section">
@@ -334,7 +334,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <h3 class="widget-title">Most Read</h3>
                                 <div class="popular-list">
                                     <?php 
-                                    $popular_articles = $article->getPopularArticles(5);
+                                    $popular_articles = $articleClass->getPopularArticles(5);
                                     foreach ($popular_articles as $popular): 
                                     ?>
                                     <article class="popular-item">
