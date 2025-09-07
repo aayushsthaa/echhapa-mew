@@ -44,7 +44,7 @@ if ($_POST) {
             'category_id' => $category_id ?: null,
             'status' => $status,
             'published_at' => $status === 'published' ? date('Y-m-d H:i:s') : null,
-            'scheduled_at' => null,
+            'scheduled_at' => $status === 'scheduled' ? sanitize($_POST['scheduled_at'] ?? '') : null,
             'meta_title' => $title,
             'meta_description' => $excerpt,
             'meta_keywords' => '',
@@ -232,10 +232,18 @@ if ($_POST) {
                                     <div class="card-body">
                                         <div class="mb-3">
                                             <label for="status" class="form-label">Status</label>
-                                            <select class="form-select" id="status" name="status">
+                                            <select class="form-select" id="status" name="status" onchange="toggleScheduleOptions()">
                                                 <option value="draft" <?php echo (isset($_POST['status']) && $_POST['status'] === 'draft') ? 'selected' : ''; ?>>Draft</option>
                                                 <option value="published" <?php echo (isset($_POST['status']) && $_POST['status'] === 'published') ? 'selected' : ''; ?>>Published</option>
+                                                <option value="scheduled" <?php echo (isset($_POST['status']) && $_POST['status'] === 'scheduled') ? 'selected' : ''; ?>>Schedule for Later</option>
                                             </select>
+                                        </div>
+                                        
+                                        <div class="mb-3" id="scheduleOptions" style="display: none;">
+                                            <label for="scheduled_at" class="form-label">Publish Date & Time</label>
+                                            <input type="datetime-local" class="form-control" id="scheduled_at" name="scheduled_at" 
+                                                   value="<?php echo isset($_POST['scheduled_at']) ? $_POST['scheduled_at'] : ''; ?>">
+                                            <small class="text-muted">Article will be automatically published at this time</small>
                                         </div>
                                         
                                         <div class="mb-3">
