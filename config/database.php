@@ -9,11 +9,22 @@ class Database {
     public $conn;
 
     public function __construct() {
-        $this->host = $_SERVER['PGHOST'] ?? 'helium';
-        $this->db_name = $_SERVER['PGDATABASE'] ?? 'heliumdb';
-        $this->username = $_SERVER['PGUSER'] ?? 'postgres';
-        $this->password = $_SERVER['PGPASSWORD'] ?? 'password';
-        $this->port = $_SERVER['PGPORT'] ?? '5432';
+        // First try to use DATABASE_URL from Replit
+        if (isset($_SERVER['DATABASE_URL'])) {
+            $url = parse_url($_SERVER['DATABASE_URL']);
+            $this->host = $url['host'];
+            $this->db_name = ltrim($url['path'], '/');
+            $this->username = $url['user'];
+            $this->password = $url['pass'];
+            $this->port = $url['port'];
+        } else {
+            // Fallback to individual environment variables with Replit defaults
+            $this->host = $_SERVER['PGHOST'] ?? getenv('PGHOST') ?: 'ep-dawn-pond-af0j98yz.c-2.us-west-2.aws.neon.tech';
+            $this->db_name = $_SERVER['PGDATABASE'] ?? getenv('PGDATABASE') ?: 'neondb';
+            $this->username = $_SERVER['PGUSER'] ?? getenv('PGUSER') ?: 'neondb_owner';
+            $this->password = $_SERVER['PGPASSWORD'] ?? getenv('PGPASSWORD') ?: 'npg_OwYltEd9j3kL';
+            $this->port = $_SERVER['PGPORT'] ?? getenv('PGPORT') ?: '5432';
+        }
     }
 
     public function getConnection() {
