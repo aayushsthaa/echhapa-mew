@@ -1,14 +1,5 @@
 <?php
-require_once '../config/config.php';
-require_once '../classes/User.php';
-require_once '../classes/Article.php';
-
-$user = new User();
-
-// Check if user is logged in and is admin
-if (!$user->isLoggedIn() || !$user->isAdmin()) {
-    redirect('login.php');
-}
+require_once '../includes/auth_check.php';
 
 // Get categories
 $db = new Database();
