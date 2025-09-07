@@ -99,16 +99,51 @@ class ContentBlocksEditor {
                 </div>
             </div>
             <div class="block-content">
-                <div class="image-upload-area ${imageUrl ? 'has-image' : ''}" id="upload_${blockId}">
-                    ${imageUrl ? `<img src="${imageUrl}" alt="Uploaded image">` : ''}
-                    <div class="upload-placeholder">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <p>Click to upload image or drag and drop</p>
-                        <p class="text-muted">Max size: 5MB (JPG, PNG, GIF, WebP)</p>
+                <!-- Image Input Options -->
+                <div class="image-input-options mb-3">
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" name="imageSource_${blockId}" id="upload_${blockId}_radio" value="upload" checked>
+                        <label class="btn btn-outline-primary" for="upload_${blockId}_radio">
+                            <i class="fas fa-upload"></i> Upload Image
+                        </label>
+                        
+                        <input type="radio" class="btn-check" name="imageSource_${blockId}" id="url_${blockId}_radio" value="url">
+                        <label class="btn btn-outline-primary" for="url_${blockId}_radio">
+                            <i class="fas fa-link"></i> Image URL
+                        </label>
                     </div>
                 </div>
-                <input type="file" id="file_${blockId}" accept="image/*" style="display: none;" 
-                       onchange="contentEditor.handleImageUpload('${blockId}', this)">
+                
+                <!-- Upload Option -->
+                <div class="upload-option" id="uploadOption_${blockId}">
+                    <div class="image-upload-area ${imageUrl ? 'has-image' : ''}" id="upload_${blockId}">
+                        ${imageUrl ? `<img src="${imageUrl}" alt="Uploaded image">` : ''}
+                        <div class="upload-placeholder">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload image or drag and drop</p>
+                            <p class="text-muted">Max size: 5MB (JPG, PNG, GIF, WebP)</p>
+                        </div>
+                    </div>
+                    <input type="file" id="file_${blockId}" accept="image/*" style="display: none;" 
+                           onchange="contentEditor.handleImageUpload('${blockId}', this)">
+                </div>
+                
+                <!-- URL Option -->
+                <div class="url-option" id="urlOption_${blockId}" style="display: none;">
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" id="imageUrl_${blockId}" 
+                               placeholder="Enter image URL (e.g., https://example.com/image.jpg)" 
+                               value="${imageUrl}">
+                        <button type="button" class="btn btn-outline-secondary" 
+                                onclick="contentEditor.loadImageFromUrl('${blockId}')">
+                            <i class="fas fa-eye"></i> Preview
+                        </button>
+                    </div>
+                    <div class="url-preview" id="urlPreview_${blockId}">
+                        ${imageUrl ? `<img src="${imageUrl}" alt="URL image preview" style="max-width: 100%; height: auto;">` : '<p class="text-muted">Enter URL and click Preview to see image</p>'}
+                    </div>
+                </div>
+                
                 <input type="hidden" name="blocks[${blockId}][type]" value="image">
                 <input type="hidden" name="blocks[${blockId}][url]" value="${imageUrl}" id="url_${blockId}">
                 <div class="mt-2">
@@ -120,6 +155,26 @@ class ContentBlocksEditor {
         
         this.blocksContainer.appendChild(block);
         this.blocks.push(blockId);
+        
+        // Set up image source toggle
+        const uploadRadio = block.querySelector(`#upload_${blockId}_radio`);
+        const urlRadio = block.querySelector(`#url_${blockId}_radio`);
+        const uploadOption = block.querySelector(`#uploadOption_${blockId}`);
+        const urlOption = block.querySelector(`#urlOption_${blockId}`);
+        
+        uploadRadio.onchange = () => {
+            if (uploadRadio.checked) {
+                uploadOption.style.display = 'block';
+                urlOption.style.display = 'none';
+            }
+        };
+        
+        urlRadio.onchange = () => {
+            if (urlRadio.checked) {
+                uploadOption.style.display = 'none';
+                urlOption.style.display = 'block';
+            }
+        };
         
         // Set up click handler for upload area
         const uploadArea = block.querySelector('.image-upload-area');
@@ -280,6 +335,60 @@ class ContentBlocksEditor {
                 </div>
             `;
         }
+    }
+    
+    loadImageFromUrl(blockId) {
+        const imageUrlInput = document.getElementById(`imageUrl_${blockId}`);
+        const urlPreview = document.getElementById(`urlPreview_${blockId}`);
+        const hiddenUrlInput = document.getElementById(`url_${blockId}`);
+        
+        const imageUrl = imageUrlInput.value.trim();
+        
+        if (!imageUrl) {
+            urlPreview.innerHTML = '<p class="text-muted">Please enter an image URL</p>';
+            return;
+        }
+        
+        // Basic URL validation
+        try {
+            new URL(imageUrl);
+        } catch {
+            urlPreview.innerHTML = '<p class="text-danger">Please enter a valid URL</p>';
+            return;
+        }
+        
+        // Check if it's likely an image URL
+        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp'];
+        const hasImageExtension = imageExtensions.some(ext => 
+            imageUrl.toLowerCase().includes(ext)
+        );
+        
+        if (!hasImageExtension && !imageUrl.includes('unsplash.com') && !imageUrl.includes('imgur.com') && !imageUrl.includes('pixabay.com')) {
+            const proceed = confirm('This URL might not be an image. Do you want to try loading it anyway?');
+            if (!proceed) return;
+        }
+        
+        urlPreview.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading image...</div>';
+        
+        // Create image element to test if URL works
+        const img = new Image();
+        
+        img.onload = function() {
+            urlPreview.innerHTML = `<img src="${imageUrl}" alt="URL image preview" style="max-width: 100%; height: auto; border: 1px solid #dee2e6; border-radius: 4px;">`;
+            hiddenUrlInput.value = imageUrl;
+        };
+        
+        img.onerror = function() {
+            urlPreview.innerHTML = `
+                <div class="text-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Failed to load image from this URL</p>
+                    <p class="small">Please check the URL or try a different image</p>
+                </div>
+            `;
+        };
+        
+        img.src = imageUrl;
     }
     
     updateVideoPreview(blockId, url) {
