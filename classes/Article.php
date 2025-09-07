@@ -118,5 +118,94 @@ class Article {
             $data['meta_keywords'], $data['is_featured'], $data['is_breaking']
         ]);
     }
+
+    public function getById($id) {
+        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color,
+                         u.first_name, u.last_name
+                  FROM " . $this->table . " a
+                  LEFT JOIN categories c ON a.category_id = c.id
+                  LEFT JOIN users u ON a.author_id = u.id
+                  WHERE a.id = ?";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([$id]);
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function update($id, $data) {
+        $query = "UPDATE " . $this->table . " 
+                  SET title = ?, slug = ?, excerpt = ?, content = ?, 
+                      featured_image = ?, featured_image_alt = ?, category_id = ?, 
+                      status = ?, published_at = ?, scheduled_at = ?, 
+                      meta_title = ?, meta_description = ?, meta_keywords = ?, 
+                      is_featured = ?, is_breaking = ?, updated_at = CURRENT_TIMESTAMP
+                  WHERE id = ?";
+        
+        $stmt = $this->conn->prepare($query);
+        return $stmt->execute([
+            $data['title'], $data['slug'], $data['excerpt'], $data['content'],
+            $data['featured_image'], $data['featured_image_alt'], $data['category_id'],
+            $data['status'], $data['published_at'], $data['scheduled_at'],
+            $data['meta_title'], $data['meta_description'], $data['meta_keywords'],
+            $data['is_featured'], $data['is_breaking'], $id
+        ]);
+    }
+
+    public function delete($id) {
+        $query = "DELETE FROM " . $this->table . " WHERE id = ?";
+        $stmt = $this->conn->prepare($query);
+        return $stmt->execute([$id]);
+    }
+
+    public function getTrendingArticles($limit = 10) {
+        // Calculate trending based on views and recency
+        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color,
+                         u.first_name, u.last_name,
+                         (a.views * 0.7 + (EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - a.published_at)) / -86400) * 0.3) as trending_score
+                  FROM " . $this->table . " a
+                  LEFT JOIN categories c ON a.category_id = c.id
+                  LEFT JOIN users u ON a.author_id = u.id
+                  WHERE a.status = 'published' 
+                  AND a.published_at >= CURRENT_TIMESTAMP - INTERVAL '7 days'
+                  ORDER BY trending_score DESC
+                  LIMIT ?";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([$limit]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getBreakingNews($limit = 5) {
+        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color,
+                         u.first_name, u.last_name
+                  FROM " . $this->table . " a
+                  LEFT JOIN categories c ON a.category_id = c.id
+                  LEFT JOIN users u ON a.author_id = u.id
+                  WHERE a.status = 'published' AND a.is_breaking = true
+                  AND (a.published_at IS NULL OR a.published_at <= CURRENT_TIMESTAMP)
+                  ORDER BY a.published_at DESC
+                  LIMIT ?";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([$limit]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getLatestArticles($limit = 10) {
+        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color,
+                         u.first_name, u.last_name
+                  FROM " . $this->table . " a
+                  LEFT JOIN categories c ON a.category_id = c.id
+                  LEFT JOIN users u ON a.author_id = u.id
+                  WHERE a.status = 'published'
+                  AND (a.published_at IS NULL OR a.published_at <= CURRENT_TIMESTAMP)
+                  ORDER BY a.published_at DESC
+                  LIMIT ?";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([$limit]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>
