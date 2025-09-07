@@ -103,17 +103,8 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                         $section_articles = $section_content[$section['section_name']] ?? [];
                         if (!empty($section_articles)): 
                         ?>
-                        <section class="<?php echo $section['section_name']; ?>-section mb-5">
+                        <section class="newspaper-section <?php echo $section['section_name']; ?>-section">
                             <h3 class="section-title">
-                                <?php if ($section['section_name'] === 'breaking'): ?>
-                                    <i class="fas fa-bolt text-danger"></i>
-                                <?php elseif ($section['section_name'] === 'trending'): ?>
-                                    <i class="fas fa-fire text-warning"></i>
-                                <?php elseif ($section['section_name'] === 'latest'): ?>
-                                    <i class="fas fa-clock text-info"></i>
-                                <?php elseif ($section['section_name'] === 'featured'): ?>
-                                    <i class="fas fa-star text-warning"></i>
-                                <?php endif; ?>
                                 <?php echo htmlspecialchars($section['section_title']); ?>
                             </h3>
                             
@@ -136,7 +127,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <div class="row">
                                     <?php foreach ($section_articles as $index => $item): ?>
                                     <div class="col-md-<?php echo ($index === 0 && $section['section_name'] === 'featured') ? '8' : '6'; ?> mb-4">
-                                        <article class="news-item">
+                                        <article class="newspaper-article">
                                             <?php if ($item['featured_image']): ?>
                                             <div class="article-image">
                                                 <img src="<?php echo htmlspecialchars($item['featured_image']); ?>" 
@@ -158,14 +149,14 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                                     <?php endif; ?>
                                                     <span class="date"><?php echo date('M j, Y', strtotime($item['published_at'] ?? $item['created_at'])); ?></span>
                                                     <?php if ($section['section_name'] === 'trending'): ?>
-                                                    <span class="views"><i class="fas fa-eye"></i> <?php echo number_format($item['views']); ?></span>
+                                                    <span class="views"> <?php echo number_format($item['views']); ?></span>
                                                     <?php endif; ?>
                                                 </div>
                                                 <h5><a href="article.php?slug=<?php echo $item['slug']; ?>"><?php echo htmlspecialchars($item['title']); ?></a></h5>
                                                 <p><?php echo htmlspecialchars(substr($item['excerpt'] ?? $item['content'], 0, 150)) . '...'; ?></p>
                                                 <div class="article-stats">
-                                                    <span><i class="fas fa-eye"></i> <?php echo number_format($item['views']); ?></span>
-                                                    <span><i class="fas fa-clock"></i> <?php echo date('g:i A', strtotime($item['published_at'])); ?></span>
+                                                    <span> <?php echo number_format($item['views']); ?></span>
+                                                    <span> <?php echo date('g:i A', strtotime($item['published_at'])); ?></span>
                                                 </div>
                                             </div>
                                         </article>
@@ -217,7 +208,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                                         </span>
                                                         <?php endif; ?>
                                                         <span class="date"><?php echo date('M j, Y', strtotime($item['published_at'] ?? $item['created_at'])); ?></span>
-                                                        <span class="views"><i class="fas fa-eye"></i> <?php echo number_format($item['views']); ?></span>
+                                                        <span class="views"> <?php echo number_format($item['views']); ?></span>
                                                     </div>
                                                     <h5><a href="article.php?slug=<?php echo $item['slug']; ?>"><?php echo htmlspecialchars($item['title']); ?></a></h5>
                                                     <p><?php echo htmlspecialchars(substr($item['excerpt'] ?? $item['content'], 0, 120)) . '...'; ?></p>
@@ -259,7 +250,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <h6><a href="article.php?slug=<?php echo $category_article['slug']; ?>"><?php echo htmlspecialchars($category_article['title']); ?></a></h6>
                                             <div class="article-meta">
                                                 <span class="date"><?php echo date('M j, Y', strtotime($category_article['published_at'] ?? $category_article['created_at'])); ?></span>
-                                                <span class="views"><i class="fas fa-eye"></i> <?php echo number_format($category_article['views']); ?></span>
+                                                <span class="views"> <?php echo number_format($category_article['views']); ?></span>
                                             </div>
                                         </div>
                                     </article>
