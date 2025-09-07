@@ -9,10 +9,10 @@ class Database {
     public $conn;
 
     public function __construct() {
-        $this->host = $_SERVER['PGHOST'] ?? 'localhost';
-        $this->db_name = $_SERVER['PGDATABASE'] ?? 'replit';
-        $this->username = $_SERVER['PGUSER'] ?? 'replit';
-        $this->password = $_SERVER['PGPASSWORD'] ?? '';
+        $this->host = $_SERVER['PGHOST'] ?? 'helium';
+        $this->db_name = $_SERVER['PGDATABASE'] ?? 'heliumdb';
+        $this->username = $_SERVER['PGUSER'] ?? 'postgres';
+        $this->password = $_SERVER['PGPASSWORD'] ?? 'password';
         $this->port = $_SERVER['PGPORT'] ?? '5432';
     }
 
