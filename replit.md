@@ -31,6 +31,19 @@ Preferred communication style: Simple, everyday language.
 - **Interactive Elements**: Hover effects, transitions, and active states for better user experience
 - **Accessibility Features**: Proper semantic HTML structure and keyboard navigation support
 
+# Recent Changes (September 2025)
+
+## Homepage Enhancement
+- **Dynamic Sections System**: Created configurable homepage sections (breaking, trending, latest, featured) with multiple layout options (banner, grid, list)
+- **Database Schema Updates**: Added homepage_sections table and comments table, enhanced categories with homepage visibility controls
+- **Sample Content**: Added 15+ realistic articles across 5 categories with professional images and content
+- **Variable Scope Fixes**: Resolved PHP variable naming conflicts in nested loops for proper article display
+
+## Database Improvements
+- **Article Class Enhancement**: Added missing CRUD methods (getById, update, delete) for complete article management
+- **Comments System**: Created Comment class structure ready for implementation
+- **Category Management**: Enhanced with homepage display options and color coding
+
 # External Dependencies
 
 ## Frontend Libraries
