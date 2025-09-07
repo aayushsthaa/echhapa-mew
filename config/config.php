@@ -23,6 +23,10 @@ header('Expires: 0');
 // Include database
 require_once 'database.php';
 
+// Initialize database with tables and sample data
+$database = new Database();
+$database->initializeDatabase();
+
 // Utility functions
 function sanitize($data) {
     return htmlspecialchars(strip_tags(trim($data)));
