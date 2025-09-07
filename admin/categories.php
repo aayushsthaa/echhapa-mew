@@ -1,6 +1,9 @@
 <?php
 require_once '../includes/auth_check.php';
 
+$db = new Database();
+$conn = $db->getConnection();
+
 $success = '';
 $error = '';
 
