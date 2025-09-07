@@ -39,63 +39,48 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
     <link href="public/css/style.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Header -->
-    <header class="main-header">
-        <div class="topbar">
+    <!-- Newspaper Header -->
+    <header class="newspaper-header">
+        <!-- Top Header Section -->
+        <div class="header-top">
             <div class="container-fluid">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <div class="topbar-left">
-                            <span class="date"><?php echo date('l, F j, Y'); ?></span>
-                        </div>
+                <div class="logo-section">
+                    <a href="index.php" class="logo-link">
+                        <img src="public/images/eechnapa-logo.png" alt="Eechnapa" class="newspaper-logo">
+                    </a>
+                    <div class="current-date">
+                        <?php echo date('l, F j, Y'); ?>
                     </div>
-                    <div class="col-md-6">
-                        <div class="topbar-right">
-                            <div class="social-links">
-                                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                                <a href="#"><i class="fab fa-twitter"></i></a>
-                                <a href="#"><i class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <nav class="navbar navbar-expand-lg">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="index.php">
-                    <h2><i class="fas fa-newspaper text-primary"></i> <?php echo SITE_NAME; ?></h2>
-                </a>
-                
-                <div class="collapse navbar-collapse">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="index.php">Home</a>
-                        </li>
-                        <?php foreach ($categories as $cat): ?>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo $cat['slug'] === $slug ? 'active' : ''; ?>" 
-                               href="category.php?slug=<?php echo $cat['slug']; ?>">
-                                <?php echo htmlspecialchars($cat['name']); ?>
-                            </a>
-                        </li>
-                        <?php endforeach; ?>
-                    </ul>
-                    
-                    <div class="navbar-nav">
-                        <form class="d-flex" method="GET" action="search.php">
+                    <div class="header-search">
+                        <form method="GET" action="search.php">
                             <div class="input-group">
                                 <input class="form-control" type="search" name="q" placeholder="Search news...">
-                                <button class="btn btn-outline-primary" type="submit">
-                                    <i class="fas fa-search"></i>
+                                <button class="btn" type="submit">
+                                    Search
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
-        </nav>
+        </div>
+        
+        <!-- Categories Navigation -->
+        <div class="categories-nav">
+            <div class="container-fluid">
+                <div class="categories-scroll-container">
+                    <div class="categories-list">
+                        <a href="index.php" class="category-link">Home</a>
+                        <?php foreach ($categories as $cat): ?>
+                        <a href="category.php?slug=<?php echo $cat['slug']; ?>" 
+                           class="category-link <?php echo $cat['slug'] === $slug ? 'active' : ''; ?>">
+                            <?php echo htmlspecialchars($cat['name']); ?>
+                        </a>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
     </header>
 
     <!-- Main Content -->
