@@ -231,7 +231,7 @@ img {
 }
 
 /* Laptop Screen Optimizations */
-@media (min-width: 1025px) and (max-width: 1600px) {
+@media (min-width: 991px) and (max-width: 1600px) {
     .container-fluid {
         max-width: 1400px;
         margin: 0 auto;
@@ -242,16 +242,22 @@ img {
         padding: 1.5rem 0;
     }
     
-    /* Better sidebar proportions */
+    /* Better sidebar proportions for all laptop sizes */
     .col-lg-9 {
-        flex: 0 0 70%;
-        max-width: 70%;
+        flex: 0 0 70% !important;
+        max-width: 70% !important;
     }
     
     .col-lg-3 {
-        flex: 0 0 28%;
-        max-width: 28%;
+        flex: 0 0 28% !important;
+        max-width: 28% !important;
         margin-left: 2%;
+    }
+    
+    /* Hero section laptop optimization */
+    .col-lg-6 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
     }
 }
 
@@ -387,7 +393,7 @@ img {
 }
 
 /* Laptop Hero Optimizations */
-@media (min-width: 1025px) and (max-width: 1600px) {
+@media (min-width: 991px) and (max-width: 1600px) {
     .hero-article {
         aspect-ratio: 2.5/1 !important;
     }
@@ -624,7 +630,7 @@ img {
 }
 
 /* Laptop Section Optimizations */
-@media (min-width: 1025px) and (max-width: 1600px) {
+@media (min-width: 991px) and (max-width: 1600px) {
     .category-section {
         margin-bottom: 2rem;
         padding: 1.5rem 0;
@@ -666,7 +672,7 @@ img {
 }
 
 /* Laptop optimized article sizes */
-@media (min-width: 1025px) and (max-width: 1600px) {
+@media (min-width: 991px) and (max-width: 1600px) {
     .news-card,
     .category-item,
     .featured-item {
@@ -857,7 +863,7 @@ img {
 }
 
 /* Laptop Sidebar Optimizations */
-@media (min-width: 1025px) and (max-width: 1600px) {
+@media (min-width: 991px) and (max-width: 1600px) {
     .sidebar-widget {
         padding: 1.2rem;
         margin-bottom: 1.5rem;
@@ -1124,24 +1130,7 @@ img {
     }
 }
 
-/* Fix for 1300-990px range where layout stacks */
-@media (max-width: 1300px) and (min-width: 991px) {
-    .col-lg-6 {
-        flex: 0 0 100% !important;
-        max-width: 100% !important;
-    }
-    
-    .col-lg-9 {
-        flex: 0 0 100% !important;
-        max-width: 100% !important;
-    }
-    
-    .col-lg-3 {
-        flex: 0 0 100% !important;
-        max-width: 100% !important;
-        margin-top: 2rem;
-    }
-}
+/* Improved laptop layout - removed problematic stacking for 991px-1300px range */
 
 @media (max-width: 1200px) {
     .news-grid {
