@@ -1208,6 +1208,7 @@ img {
     margin-bottom: 2rem;
     overflow: hidden;
     position: relative;
+    z-index: 100;
 }
 
 .breaking-ticker {
