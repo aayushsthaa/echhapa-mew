@@ -168,8 +168,9 @@ img {
 .categories-list {
     display: flex;
     gap: 0;
-    overflow-x: auto;
+    overflow-x: hidden;
     padding: 0;
+    flex-wrap: wrap;
 }
 
 .category-link {
@@ -510,16 +511,13 @@ img {
 /* Article spacing */
 .news-card, .category-item, .featured-item, .popular-item {
     margin-bottom: 2rem !important;
-    padding: 1.5rem;
-    border: 1px solid var(--gray-200);
-    border-radius: 8px;
-    background: var(--white);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--gray-300);
+    background: transparent;
 }
 
 .news-card:hover, .category-item:hover, .featured-item:hover, .popular-item:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
+    border-bottom-color: var(--primary-red);
     transition: all 0.3s ease;
 }
 
@@ -641,7 +639,7 @@ img {
 }
 
 /* Sidebar Widgets */
-.widget {
+.sidebar-widget {
     background: var(--white);
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -657,7 +655,76 @@ img {
     color: var(--primary-black);
     border-bottom: 2px solid var(--primary-red);
     padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Trending Items Styling */
+.trending-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.trending-item:last-child {
+    border-bottom: none;
+}
+
+.trending-number {
+    background: var(--primary-red);
+    color: var(--white);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.trending-content {
+    flex: 1;
+}
+
+.trending-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+}
+
+.trending-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+/* Popular Items Styling */
+.popular-item {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.popular-item:last-child {
+    border-bottom: none;
+}
+
+.popular-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+}
+
+.popular-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-light);
 }
 
 .popular-article {
@@ -877,7 +944,7 @@ img {
         padding: 1rem;
     }
     
-    .widget {
+    .sidebar-widget {
         padding: 1rem;
     }
     

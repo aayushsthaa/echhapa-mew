@@ -198,7 +198,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
             <section class="content-grid">
                 <div class="row g-4">
                     <!-- Main Content Column -->
-                    <div class="col-lg-8">
+                    <div class="col-lg-9">
                         <!-- Latest News Section -->
                         <?php if (!empty($latest_articles)): ?>
                         <section class="latest-news-section">
@@ -311,7 +311,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
 
                     <!-- Sidebar -->
-                    <div class="col-lg-4">
+                    <div class="col-lg-3">
                         <aside class="main-sidebar">
                             <!-- Trending Section -->
                             <?php if (!empty($trending_articles)): ?>
