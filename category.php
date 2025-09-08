@@ -64,9 +64,7 @@ $stmt = $conn->prepare($query);
 $stmt->execute($params);
 $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Get all categories for navigation
-$categories_stmt = $conn->query("SELECT * FROM categories WHERE status = 'active' AND show_in_menu = true ORDER BY display_order");
-$categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
+// Categories will be loaded in header include
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -79,87 +77,9 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
     <link href="public/css/style.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Newspaper Header -->
-    <header class="newspaper-header">
-        <!-- Top Header Section -->
-        <div class="header-top">
-            <div class="container-fluid">
-                <div class="logo-section">
-                    <a href="index.php" class="logo-link">
-                        <img src="public/images/eechnapa-logo.png" alt="Eechnapa" class="newspaper-logo">
-                    </a>
-                    <div class="current-date">
-                        <?php echo date('l, F j, Y'); ?>
-                    </div>
-                    <div class="header-search">
-                        <form method="GET" action="search.php">
-                            <div class="input-group">
-                                <input class="form-control" type="search" name="q" placeholder="Search news...">
-                                <button class="btn" type="submit">
-                                    Search
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Categories Navigation -->
-        <div class="categories-nav">
-            <div class="container-fluid">
-                <div class="categories-scroll-container">
-                    <div class="categories-list">
-                        <a href="index.php" class="category-link">Home</a>
-                        <?php 
-                        // Get categories with subcategories for dropdown navigation
-                        $nav_categories = [];
-                        foreach ($categories as $cat) {
-                            if ($cat['parent_id'] === null) {
-                                if (!isset($nav_categories[$cat['id']])) {
-                                    $nav_categories[$cat['id']] = $cat;
-                                    $nav_categories[$cat['id']]['subcategories'] = [];
-                                }
-                            }
-                        }
-                        
-                        // Get subcategories
-                        $subcategories_stmt = $conn->query("SELECT * FROM categories WHERE parent_id IS NOT NULL AND show_in_menu = true ORDER BY parent_id, display_order");
-                        $subcategories = $subcategories_stmt->fetchAll(PDO::FETCH_ASSOC);
-                        
-                        foreach ($subcategories as $subcat) {
-                            if (isset($nav_categories[$subcat['parent_id']])) {
-                                $nav_categories[$subcat['parent_id']]['subcategories'][] = $subcat;
-                            }
-                        }
-                        ?>
-                        
-                        <?php foreach ($nav_categories as $cat): ?>
-                        <?php if (!empty($cat['subcategories'])): ?>
-                        <div class="category-dropdown">
-                            <a href="category.php?slug=<?php echo $cat['slug']; ?>" class="category-link dropdown-toggle <?php echo $cat['slug'] === $slug ? 'active' : ''; ?>" data-bs-toggle="dropdown">
-                                <?php echo htmlspecialchars($cat['name']); ?>
-                                <i class="fas fa-chevron-down ms-1"></i>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="category.php?slug=<?php echo $cat['slug']; ?>">All <?php echo htmlspecialchars($cat['name']); ?></a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <?php foreach ($cat['subcategories'] as $subcat): ?>
-                                <li><a class="dropdown-item" href="category.php?slug=<?php echo $subcat['slug']; ?>"><?php echo htmlspecialchars($subcat['name']); ?></a></li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
-                        <?php else: ?>
-                        <a href="category.php?slug=<?php echo $cat['slug']; ?>" class="category-link <?php echo $cat['slug'] === $slug ? 'active' : ''; ?>">
-                            <?php echo htmlspecialchars($cat['name']); ?>
-                        </a>
-                        <?php endif; ?>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+    <?php include 'includes/header.php'; ?>
+    
+    <!-- Category Content -->
 
     <!-- Main Content -->
     <main class="main-content">
