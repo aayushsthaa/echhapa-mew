@@ -106,9 +106,14 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                     <div class="col-lg-6">
                         <?php $main_featured = $featured_articles[0]; ?>
                         <article class="hero-article mb-4">
-                            <div class="row g-3">
-                                <div class="<?php echo $main_featured['featured_image'] ? 'col-8' : 'col-12'; ?>">
-                                    <div class="hero-content">
+                            <?php if ($main_featured['featured_image']): ?>
+                            <div class="hero-image">
+                                <img src="<?php echo htmlspecialchars($main_featured['featured_image']); ?>" 
+                                     alt="<?php echo htmlspecialchars($main_featured['title']); ?>" 
+                                     class="img-fluid">
+                            </div>
+                            <?php endif; ?>
+                            <div class="hero-content">
                                         <div class="hero-meta mb-2">
                                             <span class="category-badge">
                                                 <?php echo htmlspecialchars($main_featured['category_name']); ?>
@@ -134,17 +139,6 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <span class="mx-2">•</span>
                                             <?php echo date('M j, Y', strtotime($main_featured['published_at'] ?? $main_featured['created_at'])); ?>
                                         </div>
-                                    </div>
-                                </div>
-                                <?php if ($main_featured['featured_image']): ?>
-                                <div class="col-4">
-                                    <div class="hero-image">
-                                        <img src="<?php echo htmlspecialchars($main_featured['featured_image']); ?>" 
-                                             alt="<?php echo htmlspecialchars($main_featured['title']); ?>" 
-                                             class="img-fluid rounded">
-                                    </div>
-                                </div>
-                                <?php endif; ?>
                             </div>
                         </article>
                     </div>

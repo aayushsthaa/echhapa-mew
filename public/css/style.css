@@ -339,6 +339,7 @@ img {
     width: 100%;
     height: 100%;
     z-index: 1;
+    overflow: hidden;
 }
 
 .hero-image::after {
@@ -348,7 +349,7 @@ img {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(45deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 100%);
+    background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.8) 100%);
     z-index: 2;
 }
 
@@ -363,8 +364,9 @@ img {
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 3rem;
+    padding: 2rem;
     z-index: 3;
+    background: linear-gradient(transparent 0%, rgba(0,0,0,0.8) 100%);
 }
 
 .hero-title {
@@ -586,7 +588,8 @@ img {
 .breaking-ticker {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 1rem;
+    width: 100%;
 }
 
 .breaking-label {
@@ -596,14 +599,19 @@ img {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-right: 1rem;
     border-radius: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .breaking-content {
     display: flex;
     gap: 3rem;
     animation: scroll 30s linear infinite;
+    align-items: center;
+    flex: 1;
 }
 
 .breaking-item {
