@@ -86,6 +86,9 @@ class ProfessionalEditor {
                     <button type="button" class="editor-btn" data-command="insertImage" title="Insert Image">
                         <i class="fas fa-image"></i>
                     </button>
+                    <button type="button" class="editor-btn" data-command="insertVideo" title="Insert Video">
+                        <i class="fas fa-video"></i>
+                    </button>
                     <button type="button" class="editor-btn" data-command="insertTable" title="Insert Table">
                         <i class="fas fa-table"></i>
                     </button>
@@ -181,6 +184,9 @@ class ProfessionalEditor {
                 break;
             case 'insertImage':
                 this.insertImage();
+                break;
+            case 'insertVideo':
+                this.insertVideo();
                 break;
             case 'insertTable':
                 this.insertTable();
@@ -356,6 +362,174 @@ class ProfessionalEditor {
                 document.body.removeChild(modal);
             }
         });
+    }
+
+    insertVideo() {
+        // Create a modal for video insertion options
+        const modal = document.createElement('div');
+        modal.className = 'video-insert-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        `;
+        
+        modal.innerHTML = `
+            <div class="modal-content" style="background: white; padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
+                <h5 style="margin-bottom: 1rem;">Insert Video</h5>
+                <div class="tab-buttons" style="margin-bottom: 1rem; border-bottom: 1px solid #dee2e6;">
+                    <button type="button" class="tab-btn active" data-tab="embed" style="padding: 0.5rem 1rem; border: none; background: none; border-bottom: 2px solid #007bff; cursor: pointer;">YouTube/Vimeo</button>
+                    <button type="button" class="tab-btn" data-tab="upload" style="padding: 0.5rem 1rem; border: none; background: none; border-bottom: 2px solid transparent; cursor: pointer; margin-left: 1rem;">Upload File</button>
+                </div>
+                
+                <div class="tab-content">
+                    <div class="tab-panel" id="embed-panel">
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem;">Video URL:</label>
+                            <input type="url" class="video-url" placeholder="https://www.youtube.com/watch?v=... or https://vimeo.com/..." style="width: 100%; padding: 0.5rem; border: 1px solid #dee2e6; border-radius: 4px; margin-bottom: 0.5rem;">
+                            <small style="color: #6c757d;">Supports YouTube, Vimeo, and direct video URLs</small>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem;">Width (optional):</label>
+                            <input type="number" class="video-width" placeholder="560" style="width: 100px; padding: 0.5rem; border: 1px solid #dee2e6; border-radius: 4px;">
+                            <span style="margin: 0 0.5rem;">×</span>
+                            <input type="number" class="video-height" placeholder="315" style="width: 100px; padding: 0.5rem; border: 1px solid #dee2e6; border-radius: 4px;">
+                        </div>
+                    </div>
+                    
+                    <div class="tab-panel" id="upload-panel" style="display: none;">
+                        <div class="upload-area" style="border: 2px dashed #dee2e6; padding: 2rem; text-align: center; border-radius: 4px; cursor: pointer; margin-bottom: 1rem;">
+                            <i class="fas fa-video" style="font-size: 2rem; color: #6c757d; margin-bottom: 1rem;"></i>
+                            <p style="margin: 0; color: #6c757d;">Click to select video file</p>
+                            <small style="color: #6c757d;">MP4, WebM, OGV (Max: 50MB)</small>
+                        </div>
+                        <input type="file" accept="video/*" style="display: none;">
+                    </div>
+                </div>
+                
+                <div style="text-align: right; margin-top: 1.5rem;">
+                    <button type="button" class="btn-cancel" style="padding: 0.5rem 1rem; margin-right: 0.5rem; border: 1px solid #dee2e6; background: white; border-radius: 4px; cursor: pointer;">Cancel</button>
+                    <button type="button" class="btn-insert" style="padding: 0.5rem 1rem; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Insert Video</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Tab switching
+        const tabButtons = modal.querySelectorAll('.tab-btn');
+        const tabPanels = modal.querySelectorAll('.tab-panel');
+        
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabButtons.forEach(b => {
+                    b.classList.remove('active');
+                    b.style.borderBottomColor = 'transparent';
+                });
+                btn.classList.add('active');
+                btn.style.borderBottomColor = '#007bff';
+                
+                tabPanels.forEach(panel => panel.style.display = 'none');
+                modal.querySelector(`#${btn.dataset.tab}-panel`).style.display = 'block';
+            });
+        });
+        
+        // Video URL embedding
+        const urlInput = modal.querySelector('.video-url');
+        const widthInput = modal.querySelector('.video-width');
+        const heightInput = modal.querySelector('.video-height');
+        const insertBtn = modal.querySelector('.btn-insert');
+        const cancelBtn = modal.querySelector('.btn-cancel');
+        
+        // File upload handling
+        const uploadArea = modal.querySelector('.upload-area');
+        const fileInput = modal.querySelector('input[type="file"]');
+        
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            uploadArea.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #007bff;"></i><p style="margin-top: 1rem; color: #007bff;">Uploading video...</p>';
+            
+            // For now, show a message that video upload needs backend implementation
+            setTimeout(() => {
+                uploadArea.innerHTML = '<i class="fas fa-info-circle" style="font-size: 2rem; color: #ffc107;"></i><p style="margin-top: 1rem; color: #856404;">Video upload feature requires additional server configuration. Please use YouTube/Vimeo embed instead.</p>';
+            }, 1000);
+        });
+        
+        insertBtn.addEventListener('click', () => {
+            const activePanel = modal.querySelector('.tab-panel:not([style*="display: none"])');
+            
+            if (activePanel.id === 'embed-panel') {
+                const url = urlInput.value.trim();
+                const width = widthInput.value || '560';
+                const height = heightInput.value || '315';
+                
+                if (url) {
+                    let embedHTML = '';
+                    
+                    // YouTube
+                    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                        const videoId = this.extractYouTubeId(url);
+                        if (videoId) {
+                            embedHTML = `<div class="video-container" style="position: relative; width: 100%; max-width: ${width}px; margin: 15px 0;"><iframe width="${width}" height="${height}" src="https://www.youtube.com/embed/${videoId}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width: 100%; height: auto; aspect-ratio: 16/9;"></iframe></div>`;
+                        }
+                    }
+                    // Vimeo
+                    else if (url.includes('vimeo.com')) {
+                        const videoId = this.extractVimeoId(url);
+                        if (videoId) {
+                            embedHTML = `<div class="video-container" style="position: relative; width: 100%; max-width: ${width}px; margin: 15px 0;"><iframe src="https://player.vimeo.com/video/${videoId}" width="${width}" height="${height}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="width: 100%; height: auto; aspect-ratio: 16/9;"></iframe></div>`;
+                        }
+                    }
+                    // Direct video URL
+                    else {
+                        embedHTML = `<div class="video-container" style="position: relative; width: 100%; max-width: ${width}px; margin: 15px 0;"><video controls width="${width}" height="${height}" style="width: 100%; height: auto;"><source src="${url}" type="video/mp4">Your browser does not support the video tag.</video></div>`;
+                    }
+                    
+                    if (embedHTML) {
+                        document.execCommand('insertHTML', false, embedHTML);
+                        document.body.removeChild(modal);
+                    } else {
+                        alert('Please enter a valid YouTube, Vimeo, or direct video URL');
+                    }
+                } else {
+                    alert('Please enter a video URL');
+                }
+            }
+        });
+        
+        cancelBtn.addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+        
+        // Close on background click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                document.body.removeChild(modal);
+            }
+        });
+    }
+
+    extractYouTubeId(url) {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
+
+    extractVimeoId(url) {
+        const regExp = /vimeo\.com\/(?:.*#|.*\/videos\/)?([0-9]+)/;
+        const match = url.match(regExp);
+        return match ? match[1] : null;
     }
 
     insertTable() {
