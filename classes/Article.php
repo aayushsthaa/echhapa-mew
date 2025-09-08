@@ -34,9 +34,11 @@ class Article {
     }
 
     public function getFeaturedArticles($limit = 5) {
-        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug
+        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug,
+                         u.first_name, u.last_name
                   FROM " . $this->table . " a
                   LEFT JOIN categories c ON a.category_id = c.id
+                  LEFT JOIN users u ON a.author_id = u.id
                   WHERE a.status = 'published' AND a.is_featured = true
                   AND (a.published_at IS NULL OR a.published_at <= CURRENT_TIMESTAMP)
                   ORDER BY a.published_at DESC
