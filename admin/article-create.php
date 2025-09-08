@@ -250,17 +250,24 @@ if ($_POST) {
                                         
                                         <div class="mb-3">
                                             <label for="featured_image" class="form-label">Featured Image</label>
+                                            
+                                            <!-- Image URL Input -->
+                                            <div class="mb-2">
+                                                <input type="url" class="form-control" name="featured_image" id="featuredImageUrl" 
+                                                       placeholder="Enter image URL or upload image below" 
+                                                       value="<?php echo isset($_POST['featured_image']) ? htmlspecialchars($_POST['featured_image']) : ''; ?>">
+                                            </div>
+                                            
+                                            <!-- Image Upload Option -->
                                             <div class="featured-image-upload">
                                                 <div class="upload-area" id="featuredImageUpload">
                                                     <div class="upload-placeholder">
-                                                        <i class="fas fa-image"></i>
-                                                        <p>Click to upload featured image</p>
-                                                        <p class="text-muted">Recommended: 1200x600px</p>
+                                                        <i class="fas fa-upload"></i>
+                                                        <p>Or click here to upload from your PC</p>
+                                                        <p class="text-muted">JPG, PNG, GIF, WebP (Max: 5MB)</p>
                                                     </div>
                                                 </div>
                                                 <input type="file" id="featuredImageFile" accept="image/*" style="display: none;">
-                                                <input type="hidden" name="featured_image" id="featuredImageUrl" 
-                                                       value="<?php echo isset($_POST['featured_image']) ? htmlspecialchars($_POST['featured_image']) : ''; ?>">
                                             </div>
                                         </div>
                                         
