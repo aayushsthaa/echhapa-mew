@@ -300,7 +300,7 @@ $recent_articles = $article->getAllArticles(5);
                                                         </td>
                                                         <td>
                                                             <?php if ($art['category_name']): ?>
-                                                                <span class="badge" style="background-color: <?php echo $art['category_color'] ?? '#6c757d'; ?>">
+                                                                <span class="badge bg-secondary">
                                                                     <?php echo htmlspecialchars($art['category_name']); ?>
                                                                 </span>
                                                             <?php else: ?>

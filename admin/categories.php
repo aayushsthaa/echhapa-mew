@@ -141,7 +141,7 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                                             <code><?php echo htmlspecialchars($category['slug']); ?></code>
                                                         </td>
                                                         <td>
-                                                            <span class="badge" style="background-color: <?php echo htmlspecialchars($category['color']); ?>">
+                                                            <span class="badge bg-info">
                                                                 <?php echo htmlspecialchars($category['color']); ?>
                                                             </span>
                                                         </td>
