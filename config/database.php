@@ -89,9 +89,8 @@ class Database {
             show_in_menu BOOLEAN DEFAULT true,
             show_on_homepage BOOLEAN DEFAULT false,
             homepage_priority INTEGER DEFAULT 0,
-            parent_category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
-            is_subcategory BOOLEAN DEFAULT false,
-            subcategory_order INTEGER DEFAULT 0,
+            parent_id INTEGER REFERENCES categories(id) ON DELETE CASCADE,
+            level INTEGER DEFAULT 0,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
