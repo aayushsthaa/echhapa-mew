@@ -241,7 +241,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                         ?>
                         <section class="category-section">
                             <div class="section-header">
-                                <h2 class="section-title" style="border-color: <?php echo $category['color']; ?>">
+                                <h2 class="section-title">
                                     <?php echo htmlspecialchars($category['name']); ?>
                                 </h2>
                                 <a href="category.php?slug=<?php echo $category['slug']; ?>" class="view-all-link">
