@@ -67,10 +67,9 @@ class Article {
             }
             
             if (!in_array($article['id'], $_SESSION['viewed_articles'])) {
-                // Update view count and last view time
+                // Update view count
                 $update_query = "UPDATE " . $this->table . " 
-                                SET views = views + 1, 
-                                    last_view_update = CURRENT_TIMESTAMP 
+                                SET views = views + 1 
                                 WHERE slug = ?";
                 $update_stmt = $this->conn->prepare($update_query);
                 $update_stmt->execute([$slug]);

@@ -3,6 +3,7 @@
 /* CSS Variables */
 :root {
     --primary-red: #c41e3a;
+    --primary-blue: #1e40af;
     --primary-black: #000000;
     --secondary-black: #1a1a1a;
     --text-dark: #2c2c2c;
@@ -381,9 +382,19 @@ img {
 /* Grid Layouts */
 .news-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 2rem;
     margin-bottom: 3rem;
+}
+
+.featured-large {
+    grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+    .featured-large {
+        grid-column: span 1;
+    }
 }
 
 .news-card {
