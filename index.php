@@ -17,8 +17,20 @@ $conn = $db->getConnection();
 $categories_stmt = $conn->query("SELECT * FROM categories WHERE status = 'active' AND show_in_menu = true ORDER BY display_order");
 $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Get homepage categories
-$homepage_categories_stmt = $conn->query("SELECT * FROM categories WHERE status = 'active' AND show_on_homepage = true ORDER BY homepage_priority LIMIT 4");
+// Get categories for homepage display with layout settings
+$homepage_categories_stmt = $conn->query("
+    SELECT c.*, 
+           COALESCE(cds.layout_style, 'list') as layout_style,
+           COALESCE(cds.show_on_homepage, true) as show_on_homepage,
+           COALESCE(cds.display_order, c.display_order) as display_order,
+           COALESCE(cds.articles_limit, 4) as articles_limit,
+           COALESCE(cds.show_excerpts, true) as show_excerpts,
+           COALESCE(cds.show_images, true) as show_images
+    FROM categories c
+    LEFT JOIN category_display_settings cds ON c.id = cds.category_id
+    WHERE c.status = 'active' AND COALESCE(cds.show_on_homepage, true) = true
+    ORDER BY COALESCE(cds.display_order, c.display_order)
+");
 $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
@@ -251,10 +263,10 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                         <!-- Category Sections -->
                         <?php foreach ($homepage_categories as $category): ?>
                         <?php 
-                        $category_articles = $articleClass->getPublishedArticles(10, 0, $category['id']);
+                        $category_articles = $articleClass->getPublishedArticles($category['articles_limit'], 0, $category['id']);
                         if (!empty($category_articles)): 
                         ?>
-                        <section class="category-section">
+                        <section class="category-section" data-layout="<?php echo $category['layout_style']; ?>">
                             <div class="section-header">
                                 <h2 class="section-title">
                                     <?php echo htmlspecialchars($category['name']); ?>
@@ -264,11 +276,49 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                 </a>
                             </div>
                             
+                            <?php if ($category['layout_style'] === 'grid'): ?>
+                            <!-- Grid Layout -->
+                            <div class="row g-4">
+                                <?php foreach ($category_articles as $cat_article): ?>
+                                <div class="col-md-6 col-lg-4">
+                                    <article class="news-card h-100">
+                                        <?php if ($category['show_images'] && $cat_article['featured_image']): ?>
+                                        <div class="news-image">
+                                            <img src="<?php echo htmlspecialchars($cat_article['featured_image']); ?>" 
+                                                 alt="<?php echo htmlspecialchars($cat_article['title']); ?>" 
+                                                 class="img-fluid">
+                                        </div>
+                                        <?php endif; ?>
+                                        <div class="news-content p-3">
+                                            <div class="news-meta mb-2">
+                                                <span class="date"><?php echo date('M j', strtotime($cat_article['published_at'] ?? $cat_article['created_at'])); ?></span>
+                                            </div>
+                                            <h3 class="news-title h5">
+                                                <a href="article.php?slug=<?php echo $cat_article['slug']; ?>">
+                                                    <?php echo htmlspecialchars($cat_article['title']); ?>
+                                                </a>
+                                            </h3>
+                                            <?php if ($category['show_excerpts']): ?>
+                                            <p class="news-excerpt small">
+                                                <?php 
+                                                $excerpt = $cat_article['excerpt'];
+                                                echo htmlspecialchars(strlen($excerpt) > 80 ? substr($excerpt, 0, 80) . '...' : $excerpt); 
+                                                ?>
+                                            </p>
+                                            <?php endif; ?>
+                                        </div>
+                                    </article>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+                            
+                            <?php else: ?>
+                            <!-- List Layout (Default) -->
                             <div class="category-articles">
                                 <?php foreach ($category_articles as $cat_article): ?>
                                 <article class="category-item mb-4">
                                     <div class="row g-3">
-                                        <div class="<?php echo $cat_article['featured_image'] ? 'col-md-8' : 'col-12'; ?>">
+                                        <div class="<?php echo ($category['show_images'] && $cat_article['featured_image']) ? 'col-md-8' : 'col-12'; ?>">
                                             <div class="category-content">
                                                 <div class="article-meta">
                                                     <span class="date"><?php echo date('M j, Y', strtotime($cat_article['published_at'] ?? $cat_article['created_at'])); ?></span>
@@ -279,15 +329,17 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                                         <?php echo htmlspecialchars($cat_article['title']); ?>
                                                     </a>
                                                 </h3>
+                                                <?php if ($category['show_excerpts']): ?>
                                                 <p class="category-excerpt">
                                                     <?php 
                                                     $excerpt = $cat_article['excerpt'];
                                                     echo htmlspecialchars(strlen($excerpt) > 100 ? substr($excerpt, 0, 100) . '...' : $excerpt); 
                                                     ?>
                                                 </p>
+                                                <?php endif; ?>
                                             </div>
                                         </div>
-                                        <?php if ($cat_article['featured_image']): ?>
+                                        <?php if ($category['show_images'] && $cat_article['featured_image']): ?>
                                         <div class="col-md-4">
                                             <div class="category-image">
                                                 <img src="<?php echo htmlspecialchars($cat_article['featured_image']); ?>" 
@@ -300,6 +352,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                 </article>
                                 <?php endforeach; ?>
                             </div>
+                            <?php endif; ?>
                         </section>
                         
                         <!-- Ad Between Categories -->
