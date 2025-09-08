@@ -90,12 +90,12 @@ $show_trending = intval(getSetting($conn, 'show_trending', '1'));
 // Get all categories with display settings
 $categories_stmt = $conn->query("
     SELECT c.*, 
-           COALESCE(cds.layout_type, 'list') as layout_style,
-           COALESCE(cds.homepage_visible, true) as show_on_homepage,
+           COALESCE(cds.layout_style, 'list') as layout_style,
+           COALESCE(cds.show_on_homepage, true) as show_on_homepage,
            COALESCE(cds.display_order, c.display_order) as display_order,
-           COALESCE(cds.max_articles, 4) as articles_limit,
-           true as show_excerpts,
-           true as show_images
+           COALESCE(cds.articles_limit, 4) as articles_limit,
+           COALESCE(cds.show_excerpts, true) as show_excerpts,
+           COALESCE(cds.show_images, true) as show_images
     FROM categories c
     LEFT JOIN category_display_settings cds ON c.id = cds.category_id
     WHERE c.status = 'active' 
