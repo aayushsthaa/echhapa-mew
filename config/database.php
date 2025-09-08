@@ -148,7 +148,7 @@ class Database {
         CREATE TABLE IF NOT EXISTS category_display_settings (
             id SERIAL PRIMARY KEY,
             category_id INTEGER REFERENCES categories(id) ON DELETE CASCADE,
-            homepage_visible BOOLEAN DEFAULT true,
+            show_on_homepage BOOLEAN DEFAULT true,
             display_order INTEGER DEFAULT 0,
             layout_type VARCHAR(50) DEFAULT 'grid',
             layout_style VARCHAR(50) DEFAULT 'grid',
@@ -245,7 +245,7 @@ class Database {
 
         // Insert default category display settings
         $conn->exec("
-        INSERT INTO category_display_settings (category_id, homepage_visible, display_order, layout_type, layout_style, max_articles, articles_limit, show_excerpts, show_images)
+        INSERT INTO category_display_settings (category_id, show_on_homepage, display_order, layout_type, layout_style, max_articles, articles_limit, show_excerpts, show_images)
         SELECT id, true, id, 'grid', 'grid', 6, 6, true, true FROM categories
         ON CONFLICT DO NOTHING;
         ");
