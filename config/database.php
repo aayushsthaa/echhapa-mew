@@ -16,7 +16,7 @@ class Database {
             $this->db_name = ltrim($url['path'], '/');
             $this->username = $url['user'];
             $this->password = $url['pass'];
-            $this->port = $url['port'];
+            $this->port = isset($url['port']) ? $url['port'] : '5432';
         } else {
             // Fallback to individual environment variables with Replit defaults
             $this->host = $_SERVER['PGHOST'] ?? getenv('PGHOST') ?: 'ep-dawn-pond-af0j98yz.c-2.us-west-2.aws.neon.tech';
@@ -30,7 +30,7 @@ class Database {
     public function getConnection() {
         $this->conn = null;
         try {
-            $dsn = "pgsql:host=" . $this->host . ";port=" . $this->port . ";dbname=" . $this->db_name;
+            $dsn = "pgsql:host=" . $this->host . ";port=" . $this->port . ";dbname=" . $this->db_name . ";sslmode=require";
             $this->conn = new PDO($dsn, $this->username, $this->password);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch(PDOException $exception) {
