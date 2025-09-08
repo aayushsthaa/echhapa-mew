@@ -537,6 +537,121 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                 </div>
                             </div>
                             
+                            <?php elseif ($category['layout_style'] === 'banner'): ?>
+                            <!-- Banner Layout -->
+                            <div class="banner-layout">
+                                <?php if (!empty($category_articles)): ?>
+                                <?php $banner_article = $category_articles[0]; ?>
+                                <article class="banner-article position-relative">
+                                    <?php if ($category['show_images'] && $banner_article['featured_image']): ?>
+                                    <div class="banner-image">
+                                        <img src="<?php echo htmlspecialchars($banner_article['featured_image']); ?>" 
+                                             alt="<?php echo htmlspecialchars($banner_article['title']); ?>" 
+                                             class="img-fluid w-100">
+                                        <div class="banner-overlay"></div>
+                                    </div>
+                                    <?php endif; ?>
+                                    <div class="banner-content position-absolute">
+                                        <h3 class="banner-title text-white">
+                                            <a href="article.php?slug=<?php echo $banner_article['slug']; ?>" class="text-white text-decoration-none">
+                                                <?php echo htmlspecialchars($banner_article['title']); ?>
+                                            </a>
+                                        </h3>
+                                        <?php if ($category['show_excerpts']): ?>
+                                        <p class="banner-excerpt text-white">
+                                            <?php 
+                                            $excerpt = $banner_article['excerpt'];
+                                            echo htmlspecialchars(strlen($excerpt) > 120 ? substr($excerpt, 0, 120) . '...' : $excerpt); 
+                                            ?>
+                                        </p>
+                                        <?php endif; ?>
+                                        <div class="banner-meta text-white">
+                                            <span class="date"><?php echo date('M j, Y', strtotime($banner_article['published_at'] ?? $banner_article['created_at'])); ?></span>
+                                        </div>
+                                    </div>
+                                </article>
+                                <?php endif; ?>
+                            </div>
+                            
+                            <?php elseif ($category['layout_style'] === 'featured'): ?>
+                            <!-- Featured Layout -->
+                            <div class="featured-layout">
+                                <div class="row g-4">
+                                    <?php foreach ($category_articles as $index => $cat_article): ?>
+                                    <div class="col-md-6 col-lg-<?php echo $index === 0 ? '12' : '6'; ?>">
+                                        <article class="featured-article <?php echo $index === 0 ? 'featured-main' : 'featured-secondary'; ?>">
+                                            <div class="row g-0 h-100">
+                                                <?php if ($category['show_images'] && $cat_article['featured_image']): ?>
+                                                <div class="col-<?php echo $index === 0 ? '6' : '12'; ?>">
+                                                    <div class="featured-image">
+                                                        <img src="<?php echo htmlspecialchars($cat_article['featured_image']); ?>" 
+                                                             alt="<?php echo htmlspecialchars($cat_article['title']); ?>" 
+                                                             class="img-fluid h-100">
+                                                    </div>
+                                                </div>
+                                                <div class="col-<?php echo $index === 0 ? '6' : '12'; ?>">
+                                                <?php else: ?>
+                                                <div class="col-12">
+                                                <?php endif; ?>
+                                                    <div class="featured-content p-4">
+                                                        <h3 class="featured-title <?php echo $index === 0 ? 'h2' : 'h5'; ?>">
+                                                            <a href="article.php?slug=<?php echo $cat_article['slug']; ?>">
+                                                                <?php echo htmlspecialchars($cat_article['title']); ?>
+                                                            </a>
+                                                        </h3>
+                                                        <?php if ($category['show_excerpts']): ?>
+                                                        <p class="featured-excerpt">
+                                                            <?php 
+                                                            $excerpt = $cat_article['excerpt'];
+                                                            $length = $index === 0 ? 200 : 100;
+                                                            echo htmlspecialchars(strlen($excerpt) > $length ? substr($excerpt, 0, $length) . '...' : $excerpt); 
+                                                            ?>
+                                                        </p>
+                                                        <?php endif; ?>
+                                                        <div class="featured-meta">
+                                                            <span class="date"><?php echo date('M j, Y', strtotime($cat_article['published_at'] ?? $cat_article['created_at'])); ?></span>
+                                                            <span class="views ms-3"><i class="fas fa-eye"></i> <?php echo number_format($cat_article['views']); ?></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </article>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            
+                            <?php elseif ($category['layout_style'] === 'minimal'): ?>
+                            <!-- Minimal Layout -->
+                            <div class="minimal-layout">
+                                <div class="minimal-list">
+                                    <?php foreach ($category_articles as $cat_article): ?>
+                                    <article class="minimal-item py-3 border-bottom">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="minimal-content flex-grow-1">
+                                                <h4 class="minimal-title h6 mb-1">
+                                                    <a href="article.php?slug=<?php echo $cat_article['slug']; ?>" class="text-decoration-none">
+                                                        <?php echo htmlspecialchars($cat_article['title']); ?>
+                                                    </a>
+                                                </h4>
+                                                <div class="minimal-meta text-muted small">
+                                                    <span class="date"><?php echo date('M j', strtotime($cat_article['published_at'] ?? $cat_article['created_at'])); ?></span>
+                                                    <span class="views ms-3"><?php echo number_format($cat_article['views']); ?> views</span>
+                                                </div>
+                                            </div>
+                                            <?php if ($category['show_images'] && $cat_article['featured_image']): ?>
+                                            <div class="minimal-image ms-3">
+                                                <img src="<?php echo htmlspecialchars($cat_article['featured_image']); ?>" 
+                                                     alt="<?php echo htmlspecialchars($cat_article['title']); ?>" 
+                                                     class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+                                            </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </article>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            
                             <?php else: ?>
                             <!-- List Layout (Default) -->
                             <div class="category-articles">

@@ -126,6 +126,7 @@ h6 {
     box-shadow: var(--shadow);
     overflow: hidden;
     transition: var(--transition);
+    height: 100%;
 }
 
 .carousel-card:hover {
@@ -175,6 +176,7 @@ h6 {
     overflow: hidden;
     transition: var(--transition);
     margin-bottom: 1rem;
+    height: 100%;
 }
 
 .modern-card:hover {
@@ -231,6 +233,175 @@ h6 {
 
 .magazine-featured {
     border: 2px solid var(--primary-red);
+}
+
+/* Banner Layout Styles */
+.banner-layout {
+    margin-bottom: 2rem;
+}
+
+.banner-article {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    min-height: 300px;
+    background: var(--gray-800);
+}
+
+.banner-image {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+}
+
+.banner-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0.6) 100%);
+    z-index: 1;
+}
+
+.banner-content {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem;
+    z-index: 2;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+}
+
+.banner-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.banner-excerpt {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+.banner-meta {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* Featured Layout Styles */
+.featured-layout {
+    margin-bottom: 2rem;
+}
+
+.featured-article {
+    background: var(--white);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: var(--transition);
+    height: 100%;
+}
+
+.featured-article:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+}
+
+.featured-main {
+    border: 2px solid var(--primary-red);
+}
+
+.featured-image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: var(--gray-200);
+}
+
+.featured-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.featured-title {
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.3;
+}
+
+.featured-title a {
+    color: var(--text-dark);
+    text-decoration: none;
+}
+
+.featured-title a:hover {
+    color: var(--primary-red);
+}
+
+.featured-excerpt {
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.featured-meta {
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+/* Minimal Layout Styles */
+.minimal-layout {
+    margin-bottom: 2rem;
+}
+
+.minimal-list {
+    background: var(--white);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.minimal-item {
+    border-bottom: 1px solid var(--border-color) !important;
+    transition: var(--transition);
+}
+
+.minimal-item:last-child {
+    border-bottom: none !important;
+}
+
+.minimal-item:hover {
+    background: var(--gray-50);
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+.minimal-title a {
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.minimal-title a:hover {
+    color: var(--primary-red);
+}
+
+.minimal-meta {
+    color: var(--text-light);
 }
 
 .magazine-image {
@@ -1656,6 +1827,208 @@ img {
     .ad-section {
         padding: 15px;
         margin: 20px 0;
+    }
+}
+
+/* Enhanced Layout Responsive Design */
+
+/* Tablet Styles */
+@media (max-width: 992px) {
+    /* Grid Layout - Convert to 2 columns on tablets */
+    .category-section[data-layout="grid"] .col-lg-4 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+    
+    /* Magazine Layout - Stack featured article */
+    .magazine-layout .col-lg-8,
+    .magazine-layout .col-lg-4 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Featured Layout - Stack main featured */
+    .featured-layout .col-lg-12 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .featured-layout .col-lg-6 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+    
+    /* Cards Layout - Single column on tablets */
+    .cards-layout .col-lg-6 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Banner Layout - Reduce height */
+    .banner-image {
+        height: 250px;
+    }
+    
+    .banner-title {
+        font-size: 1.5rem;
+    }
+    
+    /* Carousel - Better spacing */
+    .carousel-container .col-md-4 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+}
+
+/* Enhanced Mobile Styles */
+@media (max-width: 768px) {
+    /* All grid layouts become single column */
+    .category-section[data-layout="grid"] .col-md-6,
+    .category-section[data-layout="grid"] .col-lg-4 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 1rem;
+    }
+    
+    /* Cards Layout - Single column */
+    .cards-layout .col-lg-6 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Modern Cards - Stack image and content */
+    .modern-card .col-4,
+    .modern-card .col-8 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Magazine Layout - Single column */
+    .magazine-layout .col-md-6,
+    .magazine-layout .col-lg-8,
+    .magazine-layout .col-lg-4 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 1rem;
+    }
+    
+    /* Featured Layout - Single column */
+    .featured-layout .col-md-6,
+    .featured-layout .col-lg-12,
+    .featured-layout .col-lg-6 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Featured Article - Stack image and content */
+    .featured-article .col-6,
+    .featured-article .col-12 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Banner Layout - Mobile optimization */
+    .banner-image {
+        height: 200px;
+    }
+    
+    .banner-content {
+        padding: 1rem;
+    }
+    
+    .banner-title {
+        font-size: 1.3rem;
+    }
+    
+    .banner-excerpt {
+        font-size: 0.9rem;
+    }
+    
+    /* Carousel - Single item per slide on mobile */
+    .carousel-container .col-md-4 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Typography adjustments */
+    .carousel-title, .modern-card-title, .magazine-title, .featured-title {
+        font-size: 1rem !important;
+    }
+    
+    /* List layout mobile optimization */
+    .category-articles .col-md-8,
+    .category-articles .col-md-4 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Spacing adjustments */
+    .category-section {
+        margin-bottom: 2rem;
+    }
+    
+    .news-card,
+    .carousel-card,
+    .modern-card,
+    .magazine-article,
+    .featured-article {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Small Mobile Styles */
+@media (max-width: 576px) {
+    /* Further reduce text sizes */
+    .banner-title {
+        font-size: 1.1rem;
+    }
+    
+    .featured-title.h2 {
+        font-size: 1.2rem !important;
+    }
+    
+    .magazine-title {
+        font-size: 0.95rem !important;
+    }
+    
+    /* Reduce padding */
+    .banner-content {
+        padding: 0.75rem;
+    }
+    
+    .featured-content,
+    .magazine-content,
+    .carousel-content {
+        padding: 1rem !important;
+    }
+    
+    /* Minimal layout - Smaller images */
+    .minimal-image img {
+        width: 50px !important;
+        height: 50px !important;
+    }
+    
+    /* Banner height adjustment */
+    .banner-image {
+        height: 180px;
+    }
+}
+
+/* Large Screen Optimizations */
+@media (min-width: 1400px) {
+    /* Grid layouts - 4 columns on very large screens */
+    .category-section[data-layout="grid"] .col-lg-4 {
+        flex: 0 0 25% !important;
+        max-width: 25% !important;
+    }
+    
+    /* Banner layout - Larger banner */
+    .banner-image {
+        height: 350px;
+    }
+    
+    .banner-title {
+        font-size: 2rem;
     }
 }
 
