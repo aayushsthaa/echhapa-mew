@@ -310,7 +310,7 @@ class ProfessionalEditor {
             formData.append('image', file);
             
             try {
-                const response = await fetch('../admin/upload-image.php', {
+                const response = await fetch('/admin/upload-image.php', {
                     method: 'POST',
                     body: formData
                 });
