@@ -130,7 +130,7 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="col-12">
                     <!-- Category Header -->
                     <div class="newspaper-section">
-                        <h3 class="section-title" style="background-color: <?php echo htmlspecialchars($category['color']); ?>">
+                        <h3 class="section-title category-header">
                             <?php echo htmlspecialchars($category['name']); ?> News
                         </h3>
                         <?php if ($category['description']): ?>

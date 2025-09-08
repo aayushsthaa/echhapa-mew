@@ -199,7 +199,7 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                     
                     <div class="article-meta d-flex justify-content-center align-items-center flex-wrap gap-4">
                         <?php if ($article_data['category_name']): ?>
-                            <span class="badge" style="background-color: <?php echo $article_data['category_color']; ?>; font-size: 0.9rem; padding: 0.4rem 0.8rem;">
+                            <span class="badge bg-secondary category-badge">
                                 <?php echo htmlspecialchars($article_data['category_name']); ?>
                             </span>
                         <?php endif; ?>
