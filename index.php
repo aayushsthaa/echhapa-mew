@@ -117,10 +117,10 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php foreach ($nav_categories as $category): ?>
                         <?php if (!empty($category['subcategories'])): ?>
                         <div class="category-dropdown dropdown">
-                            <a href="category.php?slug=<?php echo $category['slug']; ?>" class="category-link dropdown-toggle" data-bs-toggle="dropdown">
+                            <button class="category-link dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <?php echo htmlspecialchars($category['name']); ?>
                                 <i class="fas fa-chevron-down ms-1"></i>
-                            </a>
+                            </button>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="category.php?slug=<?php echo $category['slug']; ?>">All <?php echo htmlspecialchars($category['name']); ?></a></li>
                                 <li><hr class="dropdown-divider"></li>
