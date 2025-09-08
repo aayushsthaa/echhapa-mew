@@ -45,15 +45,15 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($article_data['meta_title'] ?: $article_data['title']); ?> - <?php echo SITE_NAME; ?></title>
-    <meta name="description" content="<?php echo htmlspecialchars($article_data['meta_description'] ?: substr(strip_tags($article_data['content']), 0, 160)); ?>">
-    <meta name="keywords" content="<?php echo htmlspecialchars($article_data['meta_keywords']); ?>">
+    <title><?php echo htmlspecialchars($article_data['title']); ?> - <?php echo SITE_NAME; ?></title>
+    <meta name="description" content="<?php echo htmlspecialchars($article_data['excerpt'] ?: substr(strip_tags($article_data['content']), 0, 160)); ?>">
+    <meta name="keywords" content="<?php echo htmlspecialchars($article_data['category_name'] ?: ''); ?>">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="article">
     <meta property="og:url" content="<?php echo 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>">
     <meta property="og:title" content="<?php echo htmlspecialchars($article_data['title']); ?>">
-    <meta property="og:description" content="<?php echo htmlspecialchars($article_data['meta_description'] ?: substr(strip_tags($article_data['content']), 0, 160)); ?>">
+    <meta property="og:description" content="<?php echo htmlspecialchars($article_data['excerpt'] ?: substr(strip_tags($article_data['content']), 0, 160)); ?>">
     <?php if ($article_data['featured_image']): ?>
     <meta property="og:image" content="<?php echo htmlspecialchars($article_data['featured_image']); ?>">
     <?php endif; ?>
@@ -62,7 +62,7 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="<?php echo 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>">
     <meta property="twitter:title" content="<?php echo htmlspecialchars($article_data['title']); ?>">
-    <meta property="twitter:description" content="<?php echo htmlspecialchars($article_data['meta_description'] ?: substr(strip_tags($article_data['content']), 0, 160)); ?>">
+    <meta property="twitter:description" content="<?php echo htmlspecialchars($article_data['excerpt'] ?: substr(strip_tags($article_data['content']), 0, 160)); ?>">
     <?php if ($article_data['featured_image']): ?>
     <meta property="twitter:image" content="<?php echo htmlspecialchars($article_data['featured_image']); ?>">
     <?php endif; ?>
