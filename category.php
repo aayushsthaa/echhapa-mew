@@ -111,11 +111,49 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="categories-scroll-container">
                     <div class="categories-list">
                         <a href="index.php" class="category-link">Home</a>
-                        <?php foreach ($categories as $cat): ?>
-                        <a href="category.php?slug=<?php echo $cat['slug']; ?>" 
-                           class="category-link <?php echo $cat['slug'] === $slug ? 'active' : ''; ?>">
+                        <?php 
+                        // Get categories with subcategories for dropdown navigation
+                        $nav_categories = [];
+                        foreach ($categories as $cat) {
+                            if ($cat['parent_id'] === null) {
+                                if (!isset($nav_categories[$cat['id']])) {
+                                    $nav_categories[$cat['id']] = $cat;
+                                    $nav_categories[$cat['id']]['subcategories'] = [];
+                                }
+                            }
+                        }
+                        
+                        // Get subcategories
+                        $subcategories_stmt = $conn->query("SELECT * FROM categories WHERE parent_id IS NOT NULL AND show_in_menu = true ORDER BY parent_id, display_order");
+                        $subcategories = $subcategories_stmt->fetchAll(PDO::FETCH_ASSOC);
+                        
+                        foreach ($subcategories as $subcat) {
+                            if (isset($nav_categories[$subcat['parent_id']])) {
+                                $nav_categories[$subcat['parent_id']]['subcategories'][] = $subcat;
+                            }
+                        }
+                        ?>
+                        
+                        <?php foreach ($nav_categories as $cat): ?>
+                        <?php if (!empty($cat['subcategories'])): ?>
+                        <div class="category-dropdown">
+                            <a href="category.php?slug=<?php echo $cat['slug']; ?>" class="category-link dropdown-toggle <?php echo $cat['slug'] === $slug ? 'active' : ''; ?>" data-bs-toggle="dropdown">
+                                <?php echo htmlspecialchars($cat['name']); ?>
+                                <i class="fas fa-chevron-down ms-1"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="category.php?slug=<?php echo $cat['slug']; ?>">All <?php echo htmlspecialchars($cat['name']); ?></a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <?php foreach ($cat['subcategories'] as $subcat): ?>
+                                <li><a class="dropdown-item" href="category.php?slug=<?php echo $subcat['slug']; ?>"><?php echo htmlspecialchars($subcat['name']); ?></a></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                        <?php else: ?>
+                        <a href="category.php?slug=<?php echo $cat['slug']; ?>" class="category-link <?php echo $cat['slug'] === $slug ? 'active' : ''; ?>">
                             <?php echo htmlspecialchars($cat['name']); ?>
                         </a>
+                        <?php endif; ?>
                         <?php endforeach; ?>
                     </div>
                 </div>
