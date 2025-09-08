@@ -391,13 +391,19 @@ img {
 }
 
 /* Breaking News Ticker */
-.breaking-ticker {
+.breaking-news-banner {
     background: var(--primary-red);
     color: var(--white);
     padding: 1rem 0;
     margin-bottom: 2rem;
     overflow: hidden;
     position: relative;
+}
+
+.breaking-ticker {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
 }
 
 .breaking-label {

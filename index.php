@@ -113,7 +113,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                      class="img-fluid">
                                 <div class="hero-overlay">
                                     <div class="hero-meta">
-                                        <span class="category-badge" style="background-color: <?php echo $main_featured['category_color']; ?>">
+                                        <span class="category-badge">
                                             <?php echo htmlspecialchars($main_featured['category_name']); ?>
                                         </span>
                                         <span class="read-time">
@@ -158,7 +158,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <div class="<?php echo $article['featured_image'] ? 'col-8' : 'col-12'; ?>">
                                         <div class="featured-content">
                                             <div class="article-meta">
-                                                <span class="category-tag" style="color: <?php echo $article['category_color']; ?>">
+                                                <span class="category-tag">
                                                     <?php echo htmlspecialchars($article['category_name']); ?>
                                                 </span>
                                                 <span class="date"><?php echo date('M j', strtotime($article['published_at'] ?? $article['created_at'])); ?></span>
@@ -207,7 +207,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <?php endif; ?>
                                     <div class="news-content">
                                         <div class="news-meta">
-                                            <span class="category-badge" style="background-color: <?php echo $article['category_color']; ?>">
+                                            <span class="category-badge">
                                                 <?php echo htmlspecialchars($article['category_name']); ?>
                                             </span>
                                             <span class="time-ago"><?php echo date('H:i', strtotime($article['published_at'] ?? $article['created_at'])); ?></span>
@@ -305,7 +305,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 </a>
                                             </h4>
                                             <div class="trending-meta">
-                                                <span class="category" style="color: <?php echo $trending['category_color']; ?>">
+                                                <span class="category">
                                                     <?php echo htmlspecialchars($trending['category_name']); ?>
                                                 </span>
                                                 <span class="views"><i class="fas fa-eye"></i> <?php echo number_format($trending['views']); ?></span>

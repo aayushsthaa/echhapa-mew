@@ -25,7 +25,7 @@ if ($article_data['category_id']) {
     $db = new Database();
     $conn = $db->getConnection();
     $related_stmt = $conn->prepare("
-        SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color
+        SELECT a.*, c.name as category_name, c.slug as category_slug
         FROM articles a 
         LEFT JOIN categories c ON a.category_id = c.id
         WHERE a.category_id = ? AND a.slug != ? AND a.status = 'published'

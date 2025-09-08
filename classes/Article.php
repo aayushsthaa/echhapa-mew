@@ -19,7 +19,7 @@ class Article {
             $where_clause .= " AND a.category_id = " . intval($category_id);
         }
 
-        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color,
+        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug,
                          u.first_name, u.last_name
                   FROM " . $this->table . " a
                   LEFT JOIN categories c ON a.category_id = c.id
@@ -34,7 +34,7 @@ class Article {
     }
 
     public function getFeaturedArticles($limit = 5) {
-        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color
+        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug
                   FROM " . $this->table . " a
                   LEFT JOIN categories c ON a.category_id = c.id
                   WHERE a.status = 'published' AND a.is_featured = true
@@ -48,7 +48,7 @@ class Article {
     }
 
     public function getArticleBySlug($slug) {
-        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color,
+        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug,
                          u.first_name, u.last_name
                   FROM " . $this->table . " a
                   LEFT JOIN categories c ON a.category_id = c.id
@@ -138,7 +138,7 @@ class Article {
     }
 
     public function getById($id) {
-        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color,
+        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug,
                          u.first_name, u.last_name
                   FROM " . $this->table . " a
                   LEFT JOIN categories c ON a.category_id = c.id
@@ -178,7 +178,7 @@ class Article {
 
     public function getTrendingArticles($limit = 10) {
         // Calculate trending based on views and recency
-        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color,
+        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug,
                          u.first_name, u.last_name,
                          (a.views * 0.7 + (EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - a.published_at)) / -86400) * 0.3) as trending_score
                   FROM " . $this->table . " a
@@ -195,7 +195,7 @@ class Article {
     }
 
     public function getBreakingNews($limit = 5) {
-        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color,
+        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug,
                          u.first_name, u.last_name
                   FROM " . $this->table . " a
                   LEFT JOIN categories c ON a.category_id = c.id
@@ -211,7 +211,7 @@ class Article {
     }
 
     public function getLatestArticles($limit = 10) {
-        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color,
+        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug,
                          u.first_name, u.last_name
                   FROM " . $this->table . " a
                   LEFT JOIN categories c ON a.category_id = c.id
@@ -227,7 +227,7 @@ class Article {
     }
 
     public function getPopularArticles($limit = 5) {
-        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color,
+        $query = "SELECT a.*, c.name as category_name, c.slug as category_slug,
                          u.first_name, u.last_name
                   FROM " . $this->table . " a
                   LEFT JOIN categories c ON a.category_id = c.id

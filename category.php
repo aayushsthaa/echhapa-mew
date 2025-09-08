@@ -48,7 +48,7 @@ if ($date_filter) {
 
 $where_clause = 'WHERE ' . implode(' AND ', $where_conditions);
 
-$query = "SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color,
+$query = "SELECT a.*, c.name as category_name, c.slug as category_slug,
                  u.first_name, u.last_name
           FROM articles a
           LEFT JOIN categories c ON a.category_id = c.id
