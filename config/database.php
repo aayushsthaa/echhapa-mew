@@ -147,7 +147,7 @@ class Database {
         -- Create category display settings table
         CREATE TABLE IF NOT EXISTS category_display_settings (
             id SERIAL PRIMARY KEY,
-            category_id INTEGER REFERENCES categories(id) ON DELETE CASCADE,
+            category_id INTEGER UNIQUE REFERENCES categories(id) ON DELETE CASCADE,
             show_on_homepage BOOLEAN DEFAULT true,
             display_order INTEGER DEFAULT 0,
             layout_type VARCHAR(50) DEFAULT 'grid',
