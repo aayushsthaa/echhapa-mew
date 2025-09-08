@@ -168,6 +168,49 @@ h6 {
     margin-bottom: 0;
 }
 
+/* Carousel Navigation Controls */
+.carousel-control-prev,
+.carousel-control-next {
+    width: 5%;
+    color: var(--text-dark);
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    color: var(--text-dark);
+    opacity: 1;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    background-size: 60% 60%;
+}
+
+.carousel-control-prev-icon:hover,
+.carousel-control-next-icon:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+/* Better carousel indicators */
+.carousel-indicators {
+    margin-bottom: 1rem;
+}
+
+.carousel-indicators [data-bs-target] {
+    background-color: var(--primary-red);
+    border: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin: 0 4px;
+}
+
 /* Modern Cards Layout Styles */
 .modern-card {
     background: var(--white);
