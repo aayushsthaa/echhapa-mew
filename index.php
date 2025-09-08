@@ -144,17 +144,8 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                     <div class="col-lg-6">
                         <div class="secondary-featured">
                             <?php foreach (array_slice($featured_articles, 1, 4) as $article): ?>
-                            <article class="featured-item">
+                            <article class="featured-item mb-3">
                                 <div class="row g-3">
-                                    <?php if ($article['featured_image']): ?>
-                                    <div class="col-4">
-                                        <div class="featured-image">
-                                            <img src="<?php echo htmlspecialchars($article['featured_image']); ?>" 
-                                                 alt="<?php echo htmlspecialchars($article['title']); ?>" 
-                                                 class="img-fluid">
-                                        </div>
-                                    </div>
-                                    <?php endif; ?>
                                     <div class="<?php echo $article['featured_image'] ? 'col-8' : 'col-12'; ?>">
                                         <div class="featured-content">
                                             <div class="article-meta">
@@ -169,10 +160,22 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 </a>
                                             </h3>
                                             <p class="featured-excerpt">
-                                                <?php echo htmlspecialchars(substr($article['excerpt'], 0, 120)); ?>...
+                                                <?php 
+                                                $excerpt = $article['excerpt'];
+                                                echo htmlspecialchars(strlen($excerpt) > 80 ? substr($excerpt, 0, 80) . '...' : $excerpt); 
+                                                ?>
                                             </p>
                                         </div>
                                     </div>
+                                    <?php if ($article['featured_image']): ?>
+                                    <div class="col-4">
+                                        <div class="featured-image">
+                                            <img src="<?php echo htmlspecialchars($article['featured_image']); ?>" 
+                                                 alt="<?php echo htmlspecialchars($article['title']); ?>" 
+                                                 class="img-fluid">
+                                        </div>
+                                    </div>
+                                    <?php endif; ?>
                                 </div>
                             </article>
                             <?php endforeach; ?>
@@ -251,17 +254,8 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                             
                             <div class="category-articles">
                                 <?php foreach ($category_articles as $cat_article): ?>
-                                <article class="category-item">
+                                <article class="category-item mb-4">
                                     <div class="row g-3">
-                                        <?php if ($cat_article['featured_image']): ?>
-                                        <div class="col-md-4">
-                                            <div class="category-image">
-                                                <img src="<?php echo htmlspecialchars($cat_article['featured_image']); ?>" 
-                                                     alt="<?php echo htmlspecialchars($cat_article['title']); ?>" 
-                                                     class="img-fluid">
-                                            </div>
-                                        </div>
-                                        <?php endif; ?>
                                         <div class="<?php echo $cat_article['featured_image'] ? 'col-md-8' : 'col-12'; ?>">
                                             <div class="category-content">
                                                 <div class="article-meta">
@@ -274,10 +268,22 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                                     </a>
                                                 </h3>
                                                 <p class="category-excerpt">
-                                                    <?php echo htmlspecialchars(substr($cat_article['excerpt'], 0, 120)); ?>...
+                                                    <?php 
+                                                    $excerpt = $cat_article['excerpt'];
+                                                    echo htmlspecialchars(strlen($excerpt) > 100 ? substr($excerpt, 0, 100) . '...' : $excerpt); 
+                                                    ?>
                                                 </p>
                                             </div>
                                         </div>
+                                        <?php if ($cat_article['featured_image']): ?>
+                                        <div class="col-md-4">
+                                            <div class="category-image">
+                                                <img src="<?php echo htmlspecialchars($cat_article['featured_image']); ?>" 
+                                                     alt="<?php echo htmlspecialchars($cat_article['title']); ?>" 
+                                                     class="img-fluid">
+                                            </div>
+                                        </div>
+                                        <?php endif; ?>
                                     </div>
                                 </article>
                                 <?php endforeach; ?>
