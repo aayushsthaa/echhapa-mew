@@ -108,6 +108,13 @@ h6 {
 
 .category-link.dropdown-toggle {
     cursor: pointer;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    padding: 0;
+    text-decoration: none;
 }
 
 .category-link.dropdown-toggle:hover {
