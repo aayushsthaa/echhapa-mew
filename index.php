@@ -116,7 +116,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                         
                         <?php foreach ($nav_categories as $category): ?>
                         <?php if (!empty($category['subcategories'])): ?>
-                        <div class="category-dropdown">
+                        <div class="category-dropdown dropdown">
                             <a href="category.php?slug=<?php echo $category['slug']; ?>" class="category-link dropdown-toggle" data-bs-toggle="dropdown">
                                 <?php echo htmlspecialchars($category['name']); ?>
                                 <i class="fas fa-chevron-down ms-1"></i>
