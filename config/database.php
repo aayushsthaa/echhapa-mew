@@ -112,6 +112,10 @@ class Database {
             is_breaking BOOLEAN DEFAULT false,
             views INTEGER DEFAULT 0,
             published_at TIMESTAMP,
+            scheduled_at TIMESTAMP,
+            meta_title VARCHAR(255),
+            meta_description TEXT,
+            meta_keywords VARCHAR(500),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
@@ -147,6 +151,18 @@ class Database {
             id SERIAL PRIMARY KEY,
             setting_key VARCHAR(100) UNIQUE NOT NULL,
             setting_value TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        -- Create category display settings table
+        CREATE TABLE IF NOT EXISTS category_display_settings (
+            id SERIAL PRIMARY KEY,
+            category_id INTEGER REFERENCES categories(id) ON DELETE CASCADE,
+            homepage_visible BOOLEAN DEFAULT true,
+            display_order INTEGER DEFAULT 0,
+            layout_type VARCHAR(50) DEFAULT 'grid',
+            max_articles INTEGER DEFAULT 6,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
@@ -195,6 +211,13 @@ class Database {
         ('featured', 'Featured Articles', 'grid', 6, true, 2),
         ('latest', 'Latest News', 'list', 8, true, 3),
         ('trending', 'Trending Now', 'grid', 4, true, 4)
+        ON CONFLICT DO NOTHING;
+        ");
+
+        // Insert default category display settings
+        $conn->exec("
+        INSERT INTO category_display_settings (category_id, homepage_visible, display_order, layout_type, max_articles)
+        SELECT id, true, id, 'grid', 6 FROM categories
         ON CONFLICT DO NOTHING;
         ");
 

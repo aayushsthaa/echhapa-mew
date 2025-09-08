@@ -336,7 +336,7 @@ $current_settings = [
                                             <strong>PHP Version:</strong> <?php echo PHP_VERSION; ?><br>
                                             <strong>Server:</strong> <?php echo $_SERVER['SERVER_SOFTWARE'] ?? 'Unknown'; ?><br>
                                             <strong>Current Time:</strong> <?php echo date('Y-m-d H:i:s'); ?><br>
-                                            <strong>Disk Space:</strong> <?php echo formatFileSize(disk_free_space('.')); ?> free
+                                            <strong>Disk Space:</strong> <?php echo function_exists('formatFileSize') ? formatFileSize(disk_free_space('.')) : 'N/A'; ?> free
                                         </small>
                                     </div>
                                 </div>
