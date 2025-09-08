@@ -13,6 +13,7 @@ if ($_POST) {
         $name = sanitize($_POST['name'] ?? '');
         $description = sanitize($_POST['description'] ?? '');
         $color = sanitize($_POST['color'] ?? '#007bff');
+        $parent_id = intval($_POST['parent_id'] ?? 0);
         
         if (empty($name)) {
             $error = 'Category name is required';
@@ -26,9 +27,21 @@ if ($_POST) {
                 $slug .= '-' . time();
             }
             
-            $stmt = $conn->prepare("INSERT INTO categories (name, slug, description, color, display_order, status) VALUES (?, ?, ?, ?, 0, 'active')");
-            if ($stmt->execute([$name, $slug, $description, $color])) {
-                $success = 'Category created successfully';
+            // Set parent_id to NULL if 0
+            $parent_id = $parent_id > 0 ? $parent_id : null;
+            
+            // Calculate level based on parent
+            $level = 0;
+            if ($parent_id) {
+                $parent_stmt = $conn->prepare("SELECT level FROM categories WHERE id = ?");
+                $parent_stmt->execute([$parent_id]);
+                $parent_level = $parent_stmt->fetchColumn();
+                $level = $parent_level + 1;
+            }
+            
+            $stmt = $conn->prepare("INSERT INTO categories (name, slug, description, color, parent_id, level, display_order, status) VALUES (?, ?, ?, ?, ?, ?, 0, 'active')");
+            if ($stmt->execute([$name, $slug, $description, $color, $parent_id, $level])) {
+                $success = $parent_id ? 'Subcategory created successfully' : 'Category created successfully';
             } else {
                 $error = 'Failed to create category';
             }
@@ -36,9 +49,12 @@ if ($_POST) {
     }
 }
 
-// Get all categories
-$categories_stmt = $conn->query("SELECT * FROM categories ORDER BY display_order, name");
+// Get all categories with hierarchical structure
+$categories_stmt = $conn->query("SELECT * FROM categories ORDER BY COALESCE(parent_id, id), display_order, name");
 $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Get main categories for parent selection
+$main_categories = $conn->query("SELECT * FROM categories WHERE parent_id IS NULL OR parent_id = 0 ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -132,7 +148,16 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                                     <?php foreach ($categories as $category): ?>
                                                     <tr>
                                                         <td>
+                                                            <?php
+                                                            // Add indentation for subcategories
+                                                            if ($category['level'] > 0) {
+                                                                echo str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', $category['level']) . '<i class="fas fa-level-up-alt fa-rotate-90 text-muted me-1"></i>';
+                                                            }
+                                                            ?>
                                                             <strong><?php echo htmlspecialchars($category['name']); ?></strong>
+                                                            <?php if ($category['level'] > 0): ?>
+                                                                <span class="badge bg-secondary ms-1">Sub</span>
+                                                            <?php endif; ?>
                                                             <?php if ($category['description']): ?>
                                                                 <br><small class="text-muted"><?php echo htmlspecialchars($category['description']); ?></small>
                                                             <?php endif; ?>
@@ -198,6 +223,20 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <div class="mb-3">
                                             <label for="description" class="form-label">Description</label>
                                             <textarea class="form-control" id="description" name="description" rows="3"><?php echo isset($_POST['description']) ? htmlspecialchars($_POST['description']) : ''; ?></textarea>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="parent_id" class="form-label">Parent Category</label>
+                                            <select class="form-select" id="parent_id" name="parent_id">
+                                                <option value="0">None (Main Category)</option>
+                                                <?php foreach ($main_categories as $main): ?>
+                                                <option value="<?php echo $main['id']; ?>" 
+                                                        <?php echo (isset($_POST['parent_id']) && $_POST['parent_id'] == $main['id']) ? 'selected' : ''; ?>>
+                                                    <?php echo htmlspecialchars($main['name']); ?>
+                                                </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                            <div class="form-text">Select a parent to create a subcategory</div>
                                         </div>
                                         
                                         <div class="mb-3">
