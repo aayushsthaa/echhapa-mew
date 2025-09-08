@@ -356,18 +356,20 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
     </footer>
 
     <!-- Comments Section -->
+    <section class="comments-section py-5">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8">
-                            Comments 
-                                <?php 
-                                require_once 'classes/Comment.php';
-                                ?>
-                            </span>
+                    <div class="comments-container">
+                        <h4 class="comments-title mb-4">
+                            <i class="fas fa-comments"></i>
+                            <span>Comments</span>
                         </h4>
                         
                         <!-- Comment Form -->
+                        <div class="comment-form-container mb-5">
                             <h5>Leave a Comment</h5>
+                            <form action="submit-comment.php" method="POST" class="comment-form">
                                 <input type="hidden" name="article_id" value="<?php echo $article_data['id']; ?>">
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
@@ -378,6 +380,7 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                     </div>
                                 </div>
                                 <div class="mb-3">
+                                    <textarea class="form-control" name="content" rows="4" placeholder="Write your comment..." required></textarea>
                                 </div>
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-paper-plane"></i> Post Comment
@@ -386,52 +389,8 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                         
                         <!-- Comments List -->
-                            <?php 
-                            ?>
-                                        <i class="fas fa-user-circle"></i>
-                                    </div>
-                                    </div>
-                                </div>
-                                </div>
-                                        <i class="fas fa-reply"></i> Reply
-                                    </button>
-                                </div>
-                                
-                                <!-- Replies -->
-                                                <i class="fas fa-user-circle"></i>
-                                                <strong><?php echo htmlspecialchars($reply['author_name']); ?></strong>
-                                            </div>
-                                                <?php echo date('M j, Y \a\t g:i A', strtotime($reply['created_at'])); ?>
-                                            </div>
-                                        </div>
-                                            <?php echo nl2br(htmlspecialchars($reply['content'])); ?>
-                                        </div>
-                                    </div>
-                                    <?php endforeach; ?>
-                                </div>
-                                <?php endif; ?>
-                                
-                                <!-- Reply Form (hidden by default) -->
-                                        <input type="hidden" name="article_id" value="<?php echo $article_data['id']; ?>">
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <input type="text" class="form-control" name="author_name" placeholder="Your Name *" required>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <input type="email" class="form-control" name="author_email" placeholder="Your Email *" required>
-                                            </div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <textarea class="form-control" name="content" rows="3" placeholder="Write your reply..." required></textarea>
-                                        </div>
-                                        <div class="reply-actions">
-                                            <button type="submit" class="btn btn-primary btn-sm">Post Reply</button>
-                                            <button type="button" class="btn btn-secondary btn-sm cancel-reply">Cancel</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                            <?php endforeach; ?>
+                        <div class="comments-list">
+                            <p class="text-muted">Comments system is ready for implementation.</p>
                         </div>
                     </div>
                 </div>
@@ -445,36 +404,19 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
         // Comments functionality
         document.addEventListener('DOMContentLoaded', function() {
             // Comment form submission
+            const commentForm = document.querySelector('.comment-form');
+            if (commentForm) {
+                commentForm.addEventListener('submit', function(e) {
                     e.preventDefault();
                     submitComment(this);
                 });
             }
-            
-            // Reply button handlers
-            document.querySelectorAll('.reply-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                });
-            });
-            
-            // Cancel reply buttons
-            document.querySelectorAll('.cancel-reply').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const replyForm = this.closest('.reply-form');
-                    replyForm.style.display = 'none';
-                });
-            });
-            
-            // Reply form submissions
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    submitComment(this);
-                });
-            });
         });
         
         function submitComment(form) {
             const formData = new FormData(form);
             
+            fetch(form.action, {
                 method: 'POST',
                 body: formData
             })
@@ -486,11 +428,8 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                     
                     // Reset form
                     form.reset();
-                    
-                    // Hide reply form if it's a reply
-                        form.closest('.reply-form').style.display = 'none';
-                    }
                 } else {
+                    showMessage(data.message || 'Error submitting comment. Please try again.', 'error');
                 }
             })
             .catch(error => {
@@ -499,23 +438,19 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
             });
         }
         
-            if (replyForm.style.display === 'none' || !replyForm.style.display) {
-                replyForm.style.display = 'block';
-                replyForm.querySelector('input[name="author_name"]').focus();
-            } else {
-                replyForm.style.display = 'none';
-            }
-        }
-        
         function showMessage(message, type) {
             const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
             const alert = document.createElement('div');
-            alert.className = `alert ${alertClass} alert-dismissible fade show`;
+            alert.className = `alert ${alertClass} alert-dismissible fade show mt-3`;
             alert.innerHTML = `
                 ${message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             `;
             
+            const container = document.querySelector('.comment-form-container');
+            if (container) {
+                container.appendChild(alert);
+            }
             
             // Auto-remove after 5 seconds
             setTimeout(() => {
