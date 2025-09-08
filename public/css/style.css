@@ -91,6 +91,7 @@ h6 {
     box-shadow: var(--shadow);
     min-width: 200px;
     margin-top: 0.5rem;
+    z-index: 1050;
 }
 
 .category-dropdown .dropdown-item {
