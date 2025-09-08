@@ -93,10 +93,47 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="categories-scroll-container">
                     <div class="categories-list">
                         <a href="index.php" class="category-link active">Home</a>
-                        <?php foreach ($categories as $category): ?>
+                        <?php 
+                        // Get categories with subcategories for dropdown navigation
+                        $nav_categories = [];
+                        foreach ($categories as $category) {
+                            if (!isset($nav_categories[$category['id']])) {
+                                $nav_categories[$category['id']] = $category;
+                                $nav_categories[$category['id']]['subcategories'] = [];
+                            }
+                        }
+                        
+                        // Get subcategories
+                        $subcategories_stmt = $conn->query("SELECT * FROM categories WHERE parent_id IS NOT NULL AND show_in_menu = true ORDER BY parent_id, display_order");
+                        $subcategories = $subcategories_stmt->fetchAll(PDO::FETCH_ASSOC);
+                        
+                        foreach ($subcategories as $subcat) {
+                            if (isset($nav_categories[$subcat['parent_id']])) {
+                                $nav_categories[$subcat['parent_id']]['subcategories'][] = $subcat;
+                            }
+                        }
+                        ?>
+                        
+                        <?php foreach ($nav_categories as $category): ?>
+                        <?php if (!empty($category['subcategories'])): ?>
+                        <div class="category-dropdown">
+                            <a href="category.php?slug=<?php echo $category['slug']; ?>" class="category-link dropdown-toggle" data-bs-toggle="dropdown">
+                                <?php echo htmlspecialchars($category['name']); ?>
+                                <i class="fas fa-chevron-down ms-1"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="category.php?slug=<?php echo $category['slug']; ?>">All <?php echo htmlspecialchars($category['name']); ?></a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <?php foreach ($category['subcategories'] as $subcat): ?>
+                                <li><a class="dropdown-item" href="category.php?slug=<?php echo $subcat['slug']; ?>"><?php echo htmlspecialchars($subcat['name']); ?></a></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                        <?php else: ?>
                         <a href="category.php?slug=<?php echo $category['slug']; ?>" class="category-link">
                             <?php echo htmlspecialchars($category['name']); ?>
                         </a>
+                        <?php endif; ?>
                         <?php endforeach; ?>
                     </div>
                 </div>
@@ -365,6 +402,139 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                     </article>
                                 </div>
                                 <?php endforeach; ?>
+                            </div>
+                            
+                            <?php elseif ($category['layout_style'] === 'carousel'): ?>
+                            <!-- Carousel Layout -->
+                            <div class="carousel-container">
+                                <div id="carousel-<?php echo $category['id']; ?>" class="carousel slide" data-bs-ride="carousel">
+                                    <div class="carousel-inner">
+                                        <?php foreach (array_chunk($category_articles, 3) as $chunk_index => $chunk): ?>
+                                        <div class="carousel-item <?php echo $chunk_index === 0 ? 'active' : ''; ?>">
+                                            <div class="row g-4">
+                                                <?php foreach ($chunk as $cat_article): ?>
+                                                <div class="col-md-4">
+                                                    <article class="carousel-card">
+                                                        <?php if ($category['show_images'] && $cat_article['featured_image']): ?>
+                                                        <div class="carousel-image">
+                                                            <img src="<?php echo htmlspecialchars($cat_article['featured_image']); ?>" 
+                                                                 alt="<?php echo htmlspecialchars($cat_article['title']); ?>" 
+                                                                 class="img-fluid">
+                                                        </div>
+                                                        <?php endif; ?>
+                                                        <div class="carousel-content p-3">
+                                                            <h4 class="carousel-title">
+                                                                <a href="article.php?slug=<?php echo $cat_article['slug']; ?>">
+                                                                    <?php echo htmlspecialchars($cat_article['title']); ?>
+                                                                </a>
+                                                            </h4>
+                                                            <?php if ($category['show_excerpts']): ?>
+                                                            <p class="carousel-excerpt">
+                                                                <?php 
+                                                                $excerpt = $cat_article['excerpt'];
+                                                                echo htmlspecialchars(strlen($excerpt) > 100 ? substr($excerpt, 0, 100) . '...' : $excerpt); 
+                                                                ?>
+                                                            </p>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    </article>
+                                                </div>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel-<?php echo $category['id']; ?>" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon"></span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#carousel-<?php echo $category['id']; ?>" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <?php elseif ($category['layout_style'] === 'cards'): ?>
+                            <!-- Modern Cards Layout -->
+                            <div class="cards-layout">
+                                <div class="row g-4">
+                                    <?php foreach ($category_articles as $cat_article): ?>
+                                    <div class="col-lg-6">
+                                        <article class="modern-card">
+                                            <div class="row g-0">
+                                                <?php if ($category['show_images'] && $cat_article['featured_image']): ?>
+                                                <div class="col-4">
+                                                    <div class="modern-card-image">
+                                                        <img src="<?php echo htmlspecialchars($cat_article['featured_image']); ?>" 
+                                                             alt="<?php echo htmlspecialchars($cat_article['title']); ?>" 
+                                                             class="img-fluid h-100">
+                                                    </div>
+                                                </div>
+                                                <div class="col-8">
+                                                <?php else: ?>
+                                                <div class="col-12">
+                                                <?php endif; ?>
+                                                    <div class="modern-card-content p-3">
+                                                        <div class="card-meta mb-2">
+                                                            <span class="date"><?php echo date('M j', strtotime($cat_article['published_at'] ?? $cat_article['created_at'])); ?></span>
+                                                        </div>
+                                                        <h4 class="modern-card-title">
+                                                            <a href="article.php?slug=<?php echo $cat_article['slug']; ?>">
+                                                                <?php echo htmlspecialchars($cat_article['title']); ?>
+                                                            </a>
+                                                        </h4>
+                                                        <?php if ($category['show_excerpts']): ?>
+                                                        <p class="modern-card-excerpt">
+                                                            <?php 
+                                                            $excerpt = $cat_article['excerpt'];
+                                                            echo htmlspecialchars(strlen($excerpt) > 120 ? substr($excerpt, 0, 120) . '...' : $excerpt); 
+                                                            ?>
+                                                        </p>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </article>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            
+                            <?php elseif ($category['layout_style'] === 'magazine'): ?>
+                            <!-- Magazine Layout -->
+                            <div class="magazine-layout">
+                                <div class="row g-4">
+                                    <?php foreach ($category_articles as $index => $cat_article): ?>
+                                    <div class="col-md-6 <?php echo $index === 0 ? 'col-lg-8' : 'col-lg-4'; ?>">
+                                        <article class="magazine-article <?php echo $index === 0 ? 'magazine-featured' : ''; ?>">
+                                            <?php if ($category['show_images'] && $cat_article['featured_image']): ?>
+                                            <div class="magazine-image">
+                                                <img src="<?php echo htmlspecialchars($cat_article['featured_image']); ?>" 
+                                                     alt="<?php echo htmlspecialchars($cat_article['title']); ?>" 
+                                                     class="img-fluid">
+                                            </div>
+                                            <?php endif; ?>
+                                            <div class="magazine-content p-3">
+                                                <h4 class="magazine-title">
+                                                    <a href="article.php?slug=<?php echo $cat_article['slug']; ?>">
+                                                        <?php echo htmlspecialchars($cat_article['title']); ?>
+                                                    </a>
+                                                </h4>
+                                                <?php if ($category['show_excerpts'] && $index === 0): ?>
+                                                <p class="magazine-excerpt">
+                                                    <?php 
+                                                    $excerpt = $cat_article['excerpt'];
+                                                    echo htmlspecialchars(strlen($excerpt) > 150 ? substr($excerpt, 0, 150) . '...' : $excerpt); 
+                                                    ?>
+                                                </p>
+                                                <?php endif; ?>
+                                                <div class="magazine-meta">
+                                                    <span class="date"><?php echo date('M j', strtotime($cat_article['published_at'] ?? $cat_article['created_at'])); ?></span>
+                                                </div>
+                                            </div>
+                                        </article>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
                             </div>
                             
                             <?php else: ?>

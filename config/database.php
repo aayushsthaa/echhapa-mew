@@ -83,7 +83,6 @@ class Database {
             name VARCHAR(100) NOT NULL,
             slug VARCHAR(100) UNIQUE NOT NULL,
             description TEXT,
-            color VARCHAR(7) DEFAULT '#007bff',
             display_order INTEGER DEFAULT 0,
             status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
             show_in_menu BOOLEAN DEFAULT true,
@@ -211,24 +210,33 @@ class Database {
 
         // Insert main categories
         $conn->exec("
-        INSERT INTO categories (name, slug, description, color, display_order, show_in_menu, show_on_homepage, homepage_priority) VALUES
-        ('Politics', 'politics', 'Political news and analysis', '#dc3545', 1, true, true, 1),
-        ('Technology', 'technology', 'Latest tech trends and innovations', '#007bff', 2, true, true, 2),
-        ('Sports', 'sports', 'Sports news and updates', '#28a745', 3, true, true, 3),
-        ('Business', 'business', 'Business and economic news', '#fd7e14', 4, true, true, 4),
-        ('Entertainment', 'entertainment', 'Entertainment and celebrity news', '#6f42c1', 5, true, false, 5)
+        INSERT INTO categories (name, slug, description, display_order, show_in_menu, show_on_homepage, homepage_priority) VALUES
+        ('Politics', 'politics', 'Political news and analysis', 1, true, true, 1),
+        ('Technology', 'technology', 'Latest tech trends and innovations', 2, true, true, 2),
+        ('Sports', 'sports', 'Sports news and updates', 3, true, true, 3),
+        ('Business', 'business', 'Business and economic news', 4, true, true, 4),
+        ('Entertainment', 'entertainment', 'Entertainment and celebrity news', 5, true, false, 5)
         ON CONFLICT (slug) DO NOTHING;
         ");
 
         // Insert subcategories
         $conn->exec("
-        INSERT INTO categories (name, slug, description, color, display_order, parent_category_id, is_subcategory, show_in_menu, show_on_homepage) VALUES
-        ('World Politics', 'world-politics', 'International political news', '#dc3545', 1, 1, true, true, false),
-        ('Local Politics', 'local-politics', 'Local and regional political coverage', '#dc3545', 2, 1, true, true, false),
-        ('Artificial Intelligence', 'artificial-intelligence', 'AI and machine learning news', '#007bff', 1, 2, true, true, true),
-        ('Mobile Technology', 'mobile-technology', 'Smartphones and mobile tech', '#007bff', 2, 2, true, true, false),
-        ('Football', 'football', 'Football news and updates', '#28a745', 1, 3, true, true, true),
-        ('Basketball', 'basketball', 'Basketball coverage', '#28a745', 2, 3, true, true, false)
+        INSERT INTO categories (name, slug, description, display_order, parent_id, level, show_in_menu, show_on_homepage) VALUES
+        ('World Politics', 'world-politics', 'International political news', 1, 1, 1, true, false),
+        ('Local Politics', 'local-politics', 'Local and regional political coverage', 2, 1, 1, true, false),
+        ('Elections', 'elections', 'Election coverage and analysis', 3, 1, 1, true, true),
+        ('Artificial Intelligence', 'artificial-intelligence', 'AI and machine learning news', 1, 2, 1, true, true),
+        ('Mobile Technology', 'mobile-technology', 'Smartphones and mobile tech', 2, 2, 1, true, false),
+        ('Software Development', 'software-development', 'Programming and development news', 3, 2, 1, true, true),
+        ('Football', 'football', 'Football news and updates', 1, 3, 1, true, true),
+        ('Basketball', 'basketball', 'Basketball coverage', 2, 3, 1, true, false),
+        ('Tennis', 'tennis', 'Tennis tournaments and players', 3, 3, 1, true, true),
+        ('Stock Market', 'stock-market', 'Financial markets and trading', 1, 4, 1, true, true),
+        ('Startups', 'startups', 'Startup news and entrepreneurship', 2, 4, 1, true, true),
+        ('Economics', 'economics', 'Economic analysis and trends', 3, 4, 1, true, false),
+        ('Movies', 'movies', 'Film industry and movie reviews', 1, 5, 1, true, true),
+        ('Music', 'music', 'Music industry and artist news', 2, 5, 1, true, true),
+        ('Television', 'television', 'TV shows and streaming content', 3, 5, 1, true, false)
         ON CONFLICT (slug) DO NOTHING;
         ");
 

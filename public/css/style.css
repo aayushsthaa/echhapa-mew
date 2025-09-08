@@ -78,6 +78,181 @@ h6 {
     padding: 0.4rem 0.8rem !important;
 }
 
+/* Category Navigation Dropdown Styles */
+.category-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.category-dropdown .dropdown-menu {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    min-width: 200px;
+    margin-top: 0.5rem;
+}
+
+.category-dropdown .dropdown-item {
+    padding: 0.5rem 1rem;
+    color: var(--text-dark);
+    text-decoration: none;
+    display: block;
+    transition: var(--transition);
+}
+
+.category-dropdown .dropdown-item:hover {
+    background: var(--gray-100);
+    color: var(--primary-red);
+}
+
+.category-link.dropdown-toggle {
+    cursor: pointer;
+}
+
+.category-link.dropdown-toggle:hover {
+    color: var(--primary-red);
+}
+
+/* Carousel Layout Styles */
+.carousel-container {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.carousel-card {
+    background: var(--white);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.carousel-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+}
+
+.carousel-image img {
+    height: 200px;
+    object-fit: cover;
+}
+
+.carousel-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.carousel-title a {
+    color: var(--text-dark);
+    text-decoration: none;
+}
+
+.carousel-title a:hover {
+    color: var(--primary-red);
+}
+
+.carousel-excerpt {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 0;
+}
+
+/* Modern Cards Layout Styles */
+.modern-card {
+    background: var(--white);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: var(--transition);
+    margin-bottom: 1rem;
+}
+
+.modern-card:hover {
+    box-shadow: var(--shadow-hover);
+}
+
+.modern-card-image img {
+    object-fit: cover;
+    height: 120px;
+}
+
+.modern-card-title {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.modern-card-title a {
+    color: var(--text-dark);
+    text-decoration: none;
+}
+
+.modern-card-title a:hover {
+    color: var(--primary-red);
+}
+
+.modern-card-excerpt {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-bottom: 0;
+}
+
+/* Magazine Layout Styles */
+.magazine-article {
+    background: var(--white);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: var(--transition);
+    margin-bottom: 1rem;
+}
+
+.magazine-article:hover {
+    box-shadow: var(--shadow-hover);
+}
+
+.magazine-featured {
+    border: 2px solid var(--primary-red);
+}
+
+.magazine-image img {
+    height: 180px;
+    object-fit: cover;
+}
+
+.magazine-featured .magazine-image img {
+    height: 250px;
+}
+
+.magazine-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.magazine-featured .magazine-title {
+    font-size: 1.3rem;
+}
+
+.magazine-title a {
+    color: var(--text-dark);
+    text-decoration: none;
+}
+
+.magazine-title a:hover {
+    color: var(--primary-red);
+}
+
+.magazine-excerpt {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 1rem;
+}
+
+.magazine-meta {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
 /* Category Header Styling */
 .category-header {
     background: var(--gray-100);

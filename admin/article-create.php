@@ -206,7 +206,7 @@ if ($_POST) {
                                         <div class="mb-3">
                                             <label class="form-label">Article Content *</label>
                                             <p class="text-muted mb-3">Use the content blocks below to create rich articles with text, images, videos, and quotes.</p>
-                                            <div id="content-blocks-editor"></div>
+                                            <div id="content-blocks-editor" data-editor data-height="400px"></div>
                                             <textarea name="content" id="finalContent" style="display:none;" required></textarea>
                                         </div>
                                     </div>
@@ -308,7 +308,7 @@ if ($_POST) {
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../public/js/admin.js"></script>
-    <script src="../public/js/content-blocks.js"></script>
+    <script src="../public/js/editor.js"></script>
     <script>
         // Featured Image Upload Handler
         document.addEventListener('DOMContentLoaded', function() {
