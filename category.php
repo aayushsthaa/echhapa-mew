@@ -19,8 +19,6 @@ if (!$category) {
     include '404.php';
     exit;
 }
-
-// Get articles in this category
 $article = new Article();
 $articles = $article->getPublishedArticles($limit, $offset, $category['id']);
 
