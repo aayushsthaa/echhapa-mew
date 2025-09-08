@@ -190,32 +190,36 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                         <!-- Newspaper-style Article List -->
                         <div class="list-layout">
                             <?php foreach ($articles as $article_item): ?>
-                            <article class="list-item">
-                                <div class="row align-items-center">
-                                    <?php if ($article_item['featured_image']): ?>
-                                    <div class="col-md-3">
-                                        <div class="article-image">
-                                            <img src="<?php echo htmlspecialchars($article_item['featured_image']); ?>" 
-                                                 alt="<?php echo htmlspecialchars($article_item['title']); ?>">
-                                            <?php if ($article_item['is_breaking']): ?>
-                                            <span class="breaking-badge">Breaking</span>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                    <?php endif; ?>
-                                    <div class="col-md-<?php echo $article_item['featured_image'] ? '9' : '12'; ?>">
+                            <article class="list-item mb-4">
+                                <div class="row align-items-center g-3">
+                                    <div class="<?php echo $article_item['featured_image'] ? 'col-md-8' : 'col-12'; ?>">
                                         <div class="article-content">
-                                            <div class="article-meta">
+                                            <div class="article-meta mb-2">
                                                 <span class="category" style="color: <?php echo htmlspecialchars($category['color']); ?>">
                                                     <?php echo htmlspecialchars($category['name']); ?>
                                                 </span>
-                                                <span class="date"><?php echo date('M j, Y', strtotime($article_item['published_at'] ?? $article_item['created_at'])); ?></span>
-                                                <span class="views"><?php echo number_format($article_item['views']); ?> views</span>
+                                                <span class="date ms-3"><?php echo date('M j, Y', strtotime($article_item['published_at'] ?? $article_item['created_at'])); ?></span>
+                                                <span class="views ms-3"><?php echo number_format($article_item['views']); ?> views</span>
+                                                <?php if ($article_item['is_breaking']): ?>
+                                                <span class="breaking-badge ms-3">Breaking</span>
+                                                <?php endif; ?>
                                             </div>
                                             <h5><a href="article.php?slug=<?php echo $article_item['slug']; ?>"><?php echo htmlspecialchars($article_item['title']); ?></a></h5>
-                                            <p><?php echo htmlspecialchars(substr($article_item['excerpt'] ?? $article_item['content'], 0, 120)) . '...'; ?></p>
+                                            <p><?php 
+                                            $length = $article_item['featured_image'] ? 120 : 200;
+                                            echo htmlspecialchars(substr($article_item['excerpt'] ?? $article_item['content'], 0, $length)) . '...'; 
+                                            ?></p>
                                         </div>
                                     </div>
+                                    <?php if ($article_item['featured_image']): ?>
+                                    <div class="col-md-4">
+                                        <div class="article-image">
+                                            <img src="<?php echo htmlspecialchars($article_item['featured_image']); ?>" 
+                                                 alt="<?php echo htmlspecialchars($article_item['title']); ?>"
+                                                 class="img-fluid rounded">
+                                        </div>
+                                    </div>
+                                    <?php endif; ?>
                                 </div>
                             </article>
                             <?php endforeach; ?>
