@@ -368,7 +368,7 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <?php 
                                 require_once 'classes/Comment.php';
                                 $commentClass = new Comment();
-                                $commentCount = $commentClass->getCommentCount($article['id']);
+                                $commentCount = $commentClass->getCommentCount($article_data['id']);
                                 echo "($commentCount)";
                                 ?>
                             </span>
@@ -378,7 +378,7 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div class="comment-form-section">
                             <h5>Leave a Comment</h5>
                             <form id="commentForm" class="comment-form">
-                                <input type="hidden" name="article_id" value="<?php echo $article['id']; ?>">
+                                <input type="hidden" name="article_id" value="<?php echo $article_data['id']; ?>">
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <input type="text" class="form-control" name="author_name" placeholder="Your Name *" required>
@@ -399,7 +399,7 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                         <!-- Comments List -->
                         <div class="comments-list" id="commentsList">
                             <?php 
-                            $comments = $commentClass->getCommentsByArticle($article['id']);
+                            $comments = $commentClass->getCommentsByArticle($article_data['id']);
                             foreach ($comments as $comment): 
                             ?>
                             <div class="comment-item" data-comment-id="<?php echo $comment['id']; ?>">
@@ -446,7 +446,7 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <!-- Reply Form (hidden by default) -->
                                 <div class="reply-form" id="replyForm<?php echo $comment['id']; ?>" style="display: none;">
                                     <form class="comment-reply-form" data-parent-id="<?php echo $comment['id']; ?>">
-                                        <input type="hidden" name="article_id" value="<?php echo $article['id']; ?>">
+                                        <input type="hidden" name="article_id" value="<?php echo $article_data['id']; ?>">
                                         <input type="hidden" name="parent_id" value="<?php echo $comment['id']; ?>">
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
