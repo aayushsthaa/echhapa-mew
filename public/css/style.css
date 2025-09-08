@@ -226,7 +226,7 @@ img {
 
 /* Main Content Layout */
 .main-content {
-    padding: 2rem 0;
+    padding: 1.5rem 0;
     min-height: 70vh;
 }
 
@@ -239,7 +239,7 @@ img {
     }
     
     .main-content {
-        padding: 1.5rem 0;
+        padding: 1rem 0;
     }
     
     /* Better sidebar proportions for all laptop sizes */
@@ -286,7 +286,7 @@ img {
 
 .article-image img {
     width: 100%;
-    height: 200px;
+    height: 120px;
     object-fit: cover;
     transition: var(--transition);
 }
@@ -311,7 +311,7 @@ img {
 }
 
 .article-content {
-    padding: 1.5rem;
+    padding: 1rem;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -321,7 +321,7 @@ img {
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     font-size: 0.85rem;
     color: var(--text-light);
 }
@@ -345,7 +345,7 @@ img {
     font-size: 1.1rem;
     font-weight: 700;
     line-height: 1.3;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
     flex: 1;
 }
 
@@ -360,8 +360,8 @@ img {
 
 .article-excerpt {
     color: var(--text-light);
-    line-height: 1.6;
-    margin-bottom: 1rem;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
     font-size: 0.9rem;
 }
 
@@ -632,27 +632,27 @@ img {
 /* Laptop Section Optimizations */
 @media (min-width: 991px) and (max-width: 1600px) {
     .category-section {
-        margin-bottom: 2rem;
-        padding: 1.5rem 0;
+        margin-bottom: 1.5rem;
+        padding: 1rem 0;
     }
     
     .latest-news-section {
-        margin-bottom: 2rem;
-        padding: 1.5rem 0;
+        margin-bottom: 1.5rem;
+        padding: 1rem 0;
     }
     
     .hero-section {
-        padding: 1.5rem 0;
-        margin-bottom: 2rem;
+        padding: 1rem 0;
+        margin-bottom: 1.5rem;
     }
     
     .section-header {
-        margin-bottom: 1.2rem;
+        margin-bottom: 1rem;
     }
     
     .section-title {
         font-size: 1.6rem;
-        margin-bottom: 1rem;
+        margin-bottom: 0.75rem;
     }
     
     .view-all-link {
@@ -665,8 +665,8 @@ img {
 .category-item,
 .featured-item,
 .popular-item {
-    margin-bottom: 1.5rem !important;
-    padding-bottom: 1rem;
+    margin-bottom: 1rem !important;
+    padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--gray-300);
     background: transparent;
 }
@@ -676,14 +676,14 @@ img {
     .news-card,
     .category-item,
     .featured-item {
-        margin-bottom: 1.2rem !important;
-        padding-bottom: 0.8rem;
+        margin-bottom: 0.8rem !important;
+        padding-bottom: 0.5rem;
     }
     
     .news-card .news-content,
     .category-item .category-content,
     .featured-item .featured-content {
-        padding: 0.5rem 0;
+        padding: 0.25rem 0;
     }
     
     .news-title,
