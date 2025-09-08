@@ -441,11 +441,11 @@ if ($_POST) {
             const form = document.querySelector('form[data-validate]');
             if (form) {
                 form.onsubmit = function(e) {
-                    // Collect content from blocks editor
-                    if (typeof contentEditor !== 'undefined') {
-                        const blocks = contentEditor.getContent();
-                        const contentJson = JSON.stringify(blocks);
-                        document.getElementById('finalContent').value = contentJson;
+                    // Get content from the ProfessionalEditor
+                    const editorElement = document.querySelector('#content-blocks-editor .editor-content');
+                    if (editorElement) {
+                        const content = editorElement.innerHTML;
+                        document.getElementById('finalContent').value = content;
                     }
                     
                     // Validate required fields
@@ -458,7 +458,7 @@ if ($_POST) {
                         return false;
                     }
                     
-                    if (!finalContent || finalContent === '[]') {
+                    if (!finalContent || finalContent === '<p><br></p>' || finalContent === '' || finalContent.replace(/<[^>]*>/g, '').trim() === '') {
                         alert('Please add some content to your article.');
                         e.preventDefault();
                         return false;

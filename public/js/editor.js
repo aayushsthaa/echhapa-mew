@@ -383,10 +383,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Auto-initialize editors
     const editorContainers = document.querySelectorAll('[data-editor]');
     editorContainers.forEach(container => {
-        new ProfessionalEditor(container.id, {
+        const editor = new ProfessionalEditor(container.id, {
             height: container.dataset.height || '400px',
             autoSave: container.dataset.autosave === 'true'
         });
+        
+        // Load existing content if available (for edit mode)
+        const hiddenTextarea = document.getElementById('finalContent');
+        if (hiddenTextarea && hiddenTextarea.value.trim()) {
+            // Delay setting content to ensure editor is fully initialized
+            setTimeout(() => {
+                editor.setContent(hiddenTextarea.value);
+            }, 100);
+        }
     });
 
     // Initialize media uploader
