@@ -170,7 +170,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
             <section class="hero-section mb-5">
                 <div class="row g-4">
                     <!-- Main Featured Article - NEWS STYLE -->
-                    <div class="col-lg-6">
+                    <div class="col-lg-8 col-md-7">
                         <?php $main_featured = $featured_articles[0]; ?>
                         <article class="hero-article mb-4">
                             <?php if ($main_featured['featured_image']): ?>
@@ -211,7 +211,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                     
                     <!-- Secondary Featured Articles -->
-                    <div class="col-lg-6">
+                    <div class="col-lg-4 col-md-5">
                         <div class="secondary-featured">
                             <?php foreach (array_slice($featured_articles, 1, 4) as $article): ?>
                             <article class="featured-item mb-3">
