@@ -4,6 +4,8 @@ require_once 'classes/Article.php';
 
 $slug = sanitize($_GET['slug'] ?? '');
 $page = max(1, intval($_GET['page'] ?? 1));
+$search = sanitize($_GET['search'] ?? '');
+$date_filter = sanitize($_GET['date_filter'] ?? '');
 $limit = ARTICLES_PER_PAGE;
 $offset = ($page - 1) * $limit;
 
@@ -19,8 +21,48 @@ if (!$category) {
     include '404.php';
     exit;
 }
-$article = new Article();
-$articles = $article->getPublishedArticles($limit, $offset, $category['id']);
+// Build article query with search and date filters
+$where_conditions = ["a.status = 'published'", "a.category_id = " . intval($category['id'])];
+$params = [];
+
+if ($search) {
+    $where_conditions[] = "(a.title LIKE ? OR a.content LIKE ? OR a.excerpt LIKE ?)";
+    $params[] = "%$search%";
+    $params[] = "%$search%";
+    $params[] = "%$search%";
+}
+
+if ($date_filter) {
+    switch ($date_filter) {
+        case 'today':
+            $where_conditions[] = "DATE(a.published_at) = CURRENT_DATE";
+            break;
+        case 'week':
+            $where_conditions[] = "a.published_at >= CURRENT_DATE - INTERVAL '7 days'";
+            break;
+        case 'month':
+            $where_conditions[] = "a.published_at >= CURRENT_DATE - INTERVAL '30 days'";
+            break;
+    }
+}
+
+$where_clause = 'WHERE ' . implode(' AND ', $where_conditions);
+
+$query = "SELECT a.*, c.name as category_name, c.slug as category_slug, c.color as category_color,
+                 u.first_name, u.last_name
+          FROM articles a
+          LEFT JOIN categories c ON a.category_id = c.id
+          LEFT JOIN users u ON a.author_id = u.id
+          $where_clause
+          ORDER BY a.is_breaking DESC, a.is_featured DESC, a.published_at DESC
+          LIMIT ? OFFSET ?";
+
+$params[] = $limit;
+$params[] = $offset;
+
+$stmt = $conn->prepare($query);
+$stmt->execute($params);
+$articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Get all categories for navigation
 $categories_stmt = $conn->query("SELECT * FROM categories WHERE status = 'active' AND show_in_menu = true ORDER BY display_order");
@@ -94,6 +136,48 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php if ($category['description']): ?>
                             <p class="category-description"><?php echo htmlspecialchars($category['description']); ?></p>
                         <?php endif; ?>
+                        
+                        <!-- Search and Filter Controls -->
+                        <div class="category-controls mb-4">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <form method="GET" class="search-form">
+                                        <input type="hidden" name="slug" value="<?php echo htmlspecialchars($slug); ?>">
+                                        <input type="hidden" name="date_filter" value="<?php echo htmlspecialchars($date_filter); ?>">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" name="search" 
+                                                   placeholder="Search in <?php echo htmlspecialchars($category['name']); ?>..." 
+                                                   value="<?php echo htmlspecialchars($search); ?>">
+                                            <button class="btn btn-outline-secondary" type="submit">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-3">
+                                    <form method="GET" class="filter-form">
+                                        <input type="hidden" name="slug" value="<?php echo htmlspecialchars($slug); ?>">
+                                        <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
+                                        <select name="date_filter" class="form-select" onchange="this.form.submit()">
+                                            <option value="">All Time</option>
+                                            <option value="today" <?php echo $date_filter === 'today' ? 'selected' : ''; ?>>Today</option>
+                                            <option value="week" <?php echo $date_filter === 'week' ? 'selected' : ''; ?>>This Week</option>
+                                            <option value="month" <?php echo $date_filter === 'month' ? 'selected' : ''; ?>>This Month</option>
+                                        </select>
+                                    </form>
+                                </div>
+                                <div class="col-md-3">
+                                    <?php if ($search || $date_filter): ?>
+                                        <a href="category.php?slug=<?php echo htmlspecialchars($slug); ?>" class="btn btn-outline-danger">
+                                            <i class="fas fa-times"></i> Clear Filters
+                                        </a>
+                                    <?php endif; ?>
+                                    <span class="text-muted ms-2">
+                                        <?php echo count($articles); ?> articles found
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     <?php if (empty($articles)): ?>

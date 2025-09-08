@@ -270,16 +270,35 @@ body {
     position: relative;
     overflow: hidden;
     width: 100%;
+    background: #f8f9fa;
+    border-radius: 6px;
 }
 
 /* Responsive image sizing for different layouts */
 .newspaper-article .article-image img {
     width: 100%;
-    height: auto;
-    min-height: 120px;
-    max-height: 200px;
+    height: 200px;
     object-fit: cover;
     display: block;
+    transition: transform 0.3s ease;
+}
+
+/* Category page list layout improvements */
+.list-item .article-image {
+    border-radius: 6px;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.list-item .article-image img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.list-item:hover .article-image img {
+    transform: scale(1.05);
 }
 
 /* Grid layout images */
@@ -288,10 +307,11 @@ body {
     height: 180px;
 }
 
-/* List layout images - smaller */
+/* List layout images - consistent sizing */
 .list-layout .article-image img {
-    height: 100px;
-    max-height: 100px;
+    height: 120px;
+    width: 100%;
+    object-fit: cover;
 }
 
 /* Small featured images */
