@@ -195,7 +195,7 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <div class="<?php echo $article_item['featured_image'] ? 'col-md-8' : 'col-12'; ?>">
                                         <div class="article-content">
                                             <div class="article-meta mb-2">
-                                                <span class="category" style="color: <?php echo htmlspecialchars($category['color']); ?>">
+                                                <span class="category-badge">
                                                     <?php echo htmlspecialchars($category['name']); ?>
                                                 </span>
                                                 <span class="date ms-3"><?php echo date('M j, Y', strtotime($article_item['published_at'] ?? $article_item['created_at'])); ?></span>
