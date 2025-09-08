@@ -1,6 +1,7 @@
 <?php
 require_once 'config/config.php';
 require_once 'classes/Article.php';
+require_once 'includes/ads_helper.php';
 
 $articleClass = new Article();
 
@@ -300,6 +301,21 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <?php endforeach; ?>
                             </div>
                         </section>
+                        
+                        <!-- Ad Between Categories -->
+                        <?php 
+                        static $ad_counter = 0;
+                        if ($ad_counter % 2 === 1) { // Show ad after every second category
+                            $between_ads = getBetweenCategoriesAds();
+                            if (!empty($between_ads)) {
+                                echo '<div class="ad-section mb-4">';
+                                echo displayAd($between_ads[0]);
+                                echo '</div>';
+                            }
+                        }
+                        $ad_counter++;
+                        ?>
+                        
                         <?php endif; ?>
                         <?php endforeach; ?>
                     </div>
@@ -333,6 +349,16 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                 </div>
                             </div>
                             <?php endif; ?>
+
+                            <!-- Sidebar Ads -->
+                            <?php 
+                            $sidebar_ads = getSidebarAds();
+                            if (!empty($sidebar_ads)) {
+                                echo '<div class="sidebar-widget ad-widget">';
+                                echo displayAd($sidebar_ads[0]);
+                                echo '</div>';
+                            }
+                            ?>
 
                             <!-- Newsletter Signup -->
                             <div class="sidebar-widget newsletter-widget">

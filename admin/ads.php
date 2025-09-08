@@ -333,6 +333,8 @@ $ads = $ads_stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <option value="content-top">Content Top</option>
                                         <option value="content-bottom">Content Bottom</option>
                                         <option value="between-articles">Between Articles</option>
+                                        <option value="between-categories">Between Categories</option>
+                                        <option value="inline">Inline Content</option>
                                     </select>
                                 </div>
                             </div>

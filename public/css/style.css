@@ -1354,4 +1354,104 @@ img {
     gap: 1.5rem;
 }
 
+/* Advertisement Styles */
+.advertisement-wrapper {
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 15px;
+    margin: 20px 0;
+    background: var(--gray-100);
+    text-align: center;
+    position: relative;
+    transition: var(--transition);
+}
+
+.advertisement-wrapper:hover {
+    box-shadow: var(--shadow);
+}
+
+.ad-label {
+    position: absolute;
+    top: -8px;
+    left: 15px;
+    background: var(--gray-200);
+    padding: 2px 8px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-light);
+    border-radius: 4px;
+}
+
+.ad-banner img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.ad-banner:hover img {
+    transform: scale(1.02);
+}
+
+.ad-text {
+    padding: 10px;
+}
+
+.ad-text h6 {
+    color: var(--primary-black);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.ad-text p {
+    color: var(--text-dark);
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.ad-section {
+    border: 2px dashed var(--gray-300);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 30px 0;
+    background: linear-gradient(135deg, var(--gray-100) 0%, var(--white) 100%);
+}
+
+.sidebar-widget.ad-widget {
+    background: var(--white);
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.sidebar-widget.ad-widget .advertisement-wrapper {
+    border: none;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+}
+
+.sidebar-widget.ad-widget .ad-label {
+    position: relative;
+    top: auto;
+    left: auto;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+/* Responsive Advertisement Styles */
+@media (max-width: 768px) {
+    .advertisement-wrapper {
+        padding: 10px;
+        margin: 15px 0;
+    }
+    
+    .ad-section {
+        padding: 15px;
+        margin: 20px 0;
+    }
+}
+
 /* Cache busting comment - Mon Sep  8 06:07:22 AM UTC 2025 */
