@@ -5,15 +5,31 @@ require_once 'includes/ads_helper.php';
 
 $articleClass = new Article();
 
-// Get different types of content for modern layout
-$breaking_news = $articleClass->getBreakingNews(3);
-$featured_articles = $articleClass->getFeaturedArticles(6);
-$latest_articles = $articleClass->getLatestArticles(8);
-$trending_articles = $articleClass->getTrendingArticles(5);
-
-// Get categories for navigation
+// Get layout settings from database
 $db = new Database();
 $conn = $db->getConnection();
+
+// Fetch layout settings
+$layout_settings = [];
+$settings_stmt = $conn->query("SELECT setting_key, setting_value FROM settings");
+while ($setting = $settings_stmt->fetch(PDO::FETCH_ASSOC)) {
+    $layout_settings[$setting['setting_key']] = $setting['setting_value'];
+}
+
+// Set defaults if settings don't exist
+$main_layout = $layout_settings['main_layout'] ?? 'mixed';
+$sidebar_layout = $layout_settings['sidebar_layout'] ?? 'widgets';
+$articles_per_section = (int)($layout_settings['articles_per_section'] ?? 5);
+$show_breaking_news = (bool)($layout_settings['show_breaking_news'] ?? true);
+$show_trending = (bool)($layout_settings['show_trending'] ?? true);
+
+// Get different types of content based on layout settings
+$breaking_news = $show_breaking_news ? $articleClass->getBreakingNews(3) : [];
+$featured_articles = $articleClass->getFeaturedArticles(6);
+$latest_articles = $articleClass->getLatestArticles($articles_per_section + 3);
+$trending_articles = $show_trending ? $articleClass->getTrendingArticles(5) : [];
+
+// Get categories for navigation
 $categories_stmt = $conn->query("SELECT * FROM categories WHERE status = 'active' AND show_in_menu = true ORDER BY display_order");
 $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -109,9 +125,10 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php endif; ?>
 
     <!-- Main Content Area -->
-    <main class="main-content">
+    <main class="main-content" data-layout="<?php echo $main_layout; ?>">
         <div class="container-fluid">
-            <!-- Hero Section - NEWS LAYOUT -->
+            <?php if ($main_layout === 'mixed'): ?>
+            <!-- Mixed Layout - Hero Section with Featured Articles -->
             <?php if (!empty($featured_articles)): ?>
             <section class="hero-section mb-5">
                 <div class="row g-4">
@@ -200,14 +217,52 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </section>
             <?php endif; ?>
+            
+            <?php elseif ($main_layout === 'clean'): ?>
+            <!-- Clean Layout - Simple List View -->
+            
+            <?php elseif ($main_layout === 'magazine'): ?>
+            <!-- Magazine Layout - Grid Style -->
+            <?php if (!empty($featured_articles)): ?>
+            <section class="magazine-hero mb-5">
+                <div class="row g-4">
+                    <?php foreach (array_slice($featured_articles, 0, 3) as $index => $article): ?>
+                    <div class="col-lg-4">
+                        <article class="magazine-card">
+                            <?php if ($article['featured_image']): ?>
+                            <div class="magazine-image">
+                                <img src="<?php echo htmlspecialchars($article['featured_image']); ?>" 
+                                     alt="<?php echo htmlspecialchars($article['title']); ?>" 
+                                     class="img-fluid">
+                            </div>
+                            <?php endif; ?>
+                            <div class="magazine-content p-3">
+                                <span class="category-badge mb-2"><?php echo htmlspecialchars($article['category_name']); ?></span>
+                                <h3 class="magazine-title">
+                                    <a href="article.php?slug=<?php echo $article['slug']; ?>">
+                                        <?php echo htmlspecialchars($article['title']); ?>
+                                    </a>
+                                </h3>
+                            </div>
+                        </article>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </section>
+            <?php endif; ?>
+            
+            <?php else: ?>
+            <!-- Default Layout -->
+            
+            <?php endif; ?>
 
             <!-- Content Grid Section -->
             <section class="content-grid">
                 <div class="row g-4">
                     <!-- Main Content Column -->
-                    <div class="col-lg-9">
+                    <div class="<?php echo $sidebar_layout === 'none' ? 'col-12' : 'col-lg-9'; ?>">
                         <!-- Latest News Section -->
-                        <?php if (!empty($latest_articles)): ?>
+                        <?php if (!empty($latest_articles) && ($main_layout === 'mixed' || $main_layout === 'clean')): ?>
                         <section class="latest-news-section">
                             <div class="section-header">
                                 <h2 class="section-title">Latest News</h2>
@@ -215,7 +270,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                             </div>
                             
                             <div class="news-grid">
-                                <?php foreach (array_slice($latest_articles, 0, 10) as $index => $article): ?>
+                                <?php foreach (array_slice($latest_articles, 0, $articles_per_section + 2) as $index => $article): ?>
                                 <article class="news-card mb-4 <?php echo $index === 0 ? 'featured-large' : ''; ?>">
                                     <div class="row g-3">
                                         <div class="<?php echo $article['featured_image'] ? 'col-8' : 'col-12'; ?>">
@@ -374,8 +429,9 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
 
                     <!-- Sidebar -->
+                    <?php if ($sidebar_layout !== 'none'): ?>
                     <div class="col-lg-3">
-                        <aside class="main-sidebar">
+                        <aside class="main-sidebar" data-layout="<?php echo $sidebar_layout; ?>">
                             <!-- Trending Section -->
                             <?php if (!empty($trending_articles)): ?>
                             <div class="sidebar-widget trending-widget">
@@ -472,6 +528,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                             </div>
                         </aside>
                     </div>
+                    <?php endif; ?>
                 </div>
             </section>
         </div>
