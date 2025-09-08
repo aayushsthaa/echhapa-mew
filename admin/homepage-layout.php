@@ -33,6 +33,21 @@ if ($_POST && isset($_POST['action'])) {
                 $stmt->execute([$key, $value, $value]);
             }
             
+            // Handle category display settings
+            if (isset($_POST['category_settings'])) {
+                foreach ($_POST['category_settings'] as $cat_id => $settings) {
+                    $layout_style = sanitize($settings['layout_style'] ?? 'list');
+                    $show_on_homepage = isset($settings['show_on_homepage']) ? 1 : 0;
+                    $display_order = intval($settings['display_order'] ?? 0);
+                    $articles_limit = intval($settings['articles_limit'] ?? 4);
+                    $show_excerpts = isset($settings['show_excerpts']) ? 1 : 0;
+                    $show_images = isset($settings['show_images']) ? 1 : 0;
+                    
+                    $stmt = $conn->prepare("INSERT INTO category_display_settings (category_id, layout_style, show_on_homepage, display_order, articles_limit, show_excerpts, show_images) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (category_id) DO UPDATE SET layout_style = ?, show_on_homepage = ?, display_order = ?, articles_limit = ?, show_excerpts = ?, show_images = ?, updated_at = CURRENT_TIMESTAMP");
+                    $stmt->execute([$cat_id, $layout_style, $show_on_homepage, $display_order, $articles_limit, $show_excerpts, $show_images, $layout_style, $show_on_homepage, $display_order, $articles_limit, $show_excerpts, $show_images]);
+                }
+            }
+            
             $success = 'Homepage layout updated successfully';
             break;
             
@@ -72,8 +87,20 @@ $articles_per_section = intval(getSetting($conn, 'articles_per_section', '5'));
 $show_breaking_news = intval(getSetting($conn, 'show_breaking_news', '1'));
 $show_trending = intval(getSetting($conn, 'show_trending', '1'));
 
-// Get all categories
-$categories_stmt = $conn->query("SELECT * FROM categories WHERE status = 'active' ORDER BY name");
+// Get all categories with display settings
+$categories_stmt = $conn->query("
+    SELECT c.*, 
+           COALESCE(cds.layout_style, 'list') as layout_style,
+           COALESCE(cds.show_on_homepage, true) as show_on_homepage,
+           COALESCE(cds.display_order, c.display_order) as display_order,
+           COALESCE(cds.articles_limit, 4) as articles_limit,
+           COALESCE(cds.show_excerpts, true) as show_excerpts,
+           COALESCE(cds.show_images, true) as show_images
+    FROM categories c
+    LEFT JOIN category_display_settings cds ON c.id = cds.category_id
+    WHERE c.status = 'active' 
+    ORDER BY COALESCE(cds.display_order, c.display_order)
+");
 $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
@@ -295,13 +322,98 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                                            id="cat_<?php echo $category['id']; ?>"
                                                            <?php echo in_array($category['id'], $featured_categories) ? 'checked' : ''; ?>>
                                                     <label class="form-check-label" for="cat_<?php echo $category['id']; ?>">
-                                                        <span class="badge me-2" style="background-color: <?php echo $category['color']; ?>;">&nbsp;</span>
+                                                        <span class="badge bg-primary me-2">&nbsp;</span>
                                                         <?php echo htmlspecialchars($category['name']); ?>
                                                     </label>
                                                 </div>
                                             </div>
                                             <?php endforeach; ?>
                                         </div>
+                                    </div>
+                                </div>
+
+                                <!-- Individual Category Display Settings -->
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Category Display Settings</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="text-muted mb-4">Configure how each category appears on the homepage</p>
+                                        <?php foreach ($categories as $category): ?>
+                                        <div class="border rounded p-3 mb-3" style="background: #f8f9fa;">
+                                            <h6 class="mb-3">
+                                                <span class="badge bg-primary me-2">&nbsp;</span>
+                                                <?php echo htmlspecialchars($category['name']); ?>
+                                            </h6>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Layout Style</label>
+                                                        <select class="form-select form-select-sm" name="category_settings[<?php echo $category['id']; ?>][layout_style]">
+                                                            <option value="list" <?php echo $category['layout_style'] === 'list' ? 'selected' : ''; ?>>List View</option>
+                                                            <option value="grid" <?php echo $category['layout_style'] === 'grid' ? 'selected' : ''; ?>>Grid View</option>
+                                                            <option value="banner" <?php echo $category['layout_style'] === 'banner' ? 'selected' : ''; ?>>Banner Style</option>
+                                                            <option value="card" <?php echo $category['layout_style'] === 'card' ? 'selected' : ''; ?>>Card Layout</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Display Order</label>
+                                                        <input type="number" class="form-control form-control-sm" 
+                                                               name="category_settings[<?php echo $category['id']; ?>][display_order]" 
+                                                               value="<?php echo $category['display_order']; ?>" min="0" max="100">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Articles Limit</label>
+                                                        <select class="form-select form-select-sm" name="category_settings[<?php echo $category['id']; ?>][articles_limit]">
+                                                            <option value="2" <?php echo $category['articles_limit'] == 2 ? 'selected' : ''; ?>>2 Articles</option>
+                                                            <option value="4" <?php echo $category['articles_limit'] == 4 ? 'selected' : ''; ?>>4 Articles</option>
+                                                            <option value="6" <?php echo $category['articles_limit'] == 6 ? 'selected' : ''; ?>>6 Articles</option>
+                                                            <option value="8" <?php echo $category['articles_limit'] == 8 ? 'selected' : ''; ?>>8 Articles</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-check-group">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" 
+                                                                   name="category_settings[<?php echo $category['id']; ?>][show_on_homepage]" 
+                                                                   id="show_<?php echo $category['id']; ?>"
+                                                                   <?php echo $category['show_on_homepage'] ? 'checked' : ''; ?>>
+                                                            <label class="form-check-label" for="show_<?php echo $category['id']; ?>">
+                                                                Show on Homepage
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" 
+                                                                   name="category_settings[<?php echo $category['id']; ?>][show_excerpts]" 
+                                                                   id="excerpts_<?php echo $category['id']; ?>"
+                                                                   <?php echo $category['show_excerpts'] ? 'checked' : ''; ?>>
+                                                            <label class="form-check-label" for="excerpts_<?php echo $category['id']; ?>">
+                                                                Show Excerpts
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" 
+                                                                   name="category_settings[<?php echo $category['id']; ?>][show_images]" 
+                                                                   id="images_<?php echo $category['id']; ?>"
+                                                                   <?php echo $category['show_images'] ? 'checked' : ''; ?>>
+                                                            <label class="form-check-label" for="images_<?php echo $category['id']; ?>">
+                                                                Show Images
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <?php endforeach; ?>
                                     </div>
                                 </div>
                             </div>
@@ -340,6 +452,26 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                                        <?php echo $current_sidebar_layout === 'minimal' ? 'checked' : ''; ?> style="display: none;">
                                                 <strong>Minimal</strong><br>
                                                 <small class="text-muted">Clean sidebar with essential widgets only</small>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="layout-option <?php echo $current_sidebar_layout === 'social' ? 'active' : ''; ?>" 
+                                             onclick="selectLayout('sidebar', 'social')">
+                                            <label>
+                                                <input type="radio" name="sidebar_layout" value="social" 
+                                                       <?php echo $current_sidebar_layout === 'social' ? 'checked' : ''; ?> style="display: none;">
+                                                <strong>Social Focus</strong><br>
+                                                <small class="text-muted">Social media feeds and sharing</small>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="layout-option <?php echo $current_sidebar_layout === 'newsletter' ? 'active' : ''; ?>" 
+                                             onclick="selectLayout('sidebar', 'newsletter')">
+                                            <label>
+                                                <input type="radio" name="sidebar_layout" value="newsletter" 
+                                                       <?php echo $current_sidebar_layout === 'newsletter' ? 'checked' : ''; ?> style="display: none;">
+                                                <strong>Newsletter Focus</strong><br>
+                                                <small class="text-muted">Newsletter signup and popular articles</small>
                                             </label>
                                         </div>
                                     </div>
