@@ -537,6 +537,18 @@ img {
     animation: scroll 30s linear infinite;
 }
 
+.breaking-item {
+    color: var(--white) !important;
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.breaking-item:hover {
+    color: #f0f0f0 !important;
+    text-decoration: underline;
+}
+
 @keyframes scroll {
     0% { transform: translateX(100%); }
     100% { transform: translateX(-100%); }
