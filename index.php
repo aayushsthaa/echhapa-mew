@@ -98,45 +98,54 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
     <!-- Main Content Area -->
     <main class="main-content">
         <div class="container-fluid">
-            <!-- Hero Section -->
+            <!-- Hero Section - NEWS LAYOUT -->
             <?php if (!empty($featured_articles)): ?>
-            <section class="hero-section">
+            <section class="hero-section mb-5">
                 <div class="row g-4">
-                    <!-- Main Featured Article -->
+                    <!-- Main Featured Article - NEWS STYLE -->
                     <div class="col-lg-6">
                         <?php $main_featured = $featured_articles[0]; ?>
-                        <article class="hero-article">
-                            <?php if ($main_featured['featured_image']): ?>
-                            <div class="hero-image">
-                                <img src="<?php echo htmlspecialchars($main_featured['featured_image']); ?>" 
-                                     alt="<?php echo htmlspecialchars($main_featured['title']); ?>" 
-                                     class="img-fluid">
-                                <div class="hero-overlay">
-                                    <div class="hero-meta">
-                                        <span class="category-badge">
-                                            <?php echo htmlspecialchars($main_featured['category_name']); ?>
-                                        </span>
-                                        <span class="read-time">
-                                            <i class="fas fa-clock"></i> 5 min read
-                                        </span>
-                                    </div>
-                                    <h1 class="hero-title">
-                                        <a href="article.php?slug=<?php echo $main_featured['slug']; ?>">
-                                            <?php echo htmlspecialchars($main_featured['title']); ?>
-                                        </a>
-                                    </h1>
-                                    <p class="hero-excerpt">
-                                        <?php echo htmlspecialchars($main_featured['excerpt']); ?>
-                                    </p>
-                                    <div class="hero-author">
-                                        <i class="fas fa-user"></i>
-                                        <?php echo htmlspecialchars($main_featured['first_name'] . ' ' . $main_featured['last_name']); ?>
-                                        <span class="mx-2">•</span>
-                                        <?php echo date('M j, Y', strtotime($main_featured['published_at'] ?? $main_featured['created_at'])); ?>
+                        <article class="hero-article mb-4">
+                            <div class="row g-3">
+                                <div class="<?php echo $main_featured['featured_image'] ? 'col-8' : 'col-12'; ?>">
+                                    <div class="hero-content">
+                                        <div class="hero-meta mb-2">
+                                            <span class="category-badge">
+                                                <?php echo htmlspecialchars($main_featured['category_name']); ?>
+                                            </span>
+                                            <span class="read-time ms-2">
+                                                <i class="fas fa-clock"></i> 5 min read
+                                            </span>
+                                        </div>
+                                        <h1 class="hero-title">
+                                            <a href="article.php?slug=<?php echo $main_featured['slug']; ?>">
+                                                <?php echo htmlspecialchars($main_featured['title']); ?>
+                                            </a>
+                                        </h1>
+                                        <p class="hero-excerpt">
+                                            <?php 
+                                            $excerpt = $main_featured['excerpt'];
+                                            echo htmlspecialchars(strlen($excerpt) > 150 ? substr($excerpt, 0, 150) . '...' : $excerpt); 
+                                            ?>
+                                        </p>
+                                        <div class="hero-author">
+                                            <i class="fas fa-user"></i>
+                                            <?php echo htmlspecialchars($main_featured['first_name'] . ' ' . $main_featured['last_name']); ?>
+                                            <span class="mx-2">•</span>
+                                            <?php echo date('M j, Y', strtotime($main_featured['published_at'] ?? $main_featured['created_at'])); ?>
+                                        </div>
                                     </div>
                                 </div>
+                                <?php if ($main_featured['featured_image']): ?>
+                                <div class="col-4">
+                                    <div class="hero-image">
+                                        <img src="<?php echo htmlspecialchars($main_featured['featured_image']); ?>" 
+                                             alt="<?php echo htmlspecialchars($main_featured['title']); ?>" 
+                                             class="img-fluid rounded">
+                                    </div>
+                                </div>
+                                <?php endif; ?>
                             </div>
-                            <?php endif; ?>
                         </article>
                     </div>
                     
@@ -199,36 +208,44 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                             </div>
                             
                             <div class="news-grid">
-                                <?php foreach (array_slice($latest_articles, 0, 6) as $index => $article): ?>
-                                <article class="news-card <?php echo $index === 0 ? 'featured-large' : ''; ?>">
-                                    <?php if ($article['featured_image']): ?>
-                                    <div class="news-image">
-                                        <img src="<?php echo htmlspecialchars($article['featured_image']); ?>" 
-                                             alt="<?php echo htmlspecialchars($article['title']); ?>" 
-                                             class="img-fluid">
-                                    </div>
-                                    <?php endif; ?>
-                                    <div class="news-content">
-                                        <div class="news-meta">
-                                            <span class="category-badge">
-                                                <?php echo htmlspecialchars($article['category_name']); ?>
-                                            </span>
-                                            <span class="time-ago"><?php echo date('H:i', strtotime($article['published_at'] ?? $article['created_at'])); ?></span>
+                                <?php foreach (array_slice($latest_articles, 0, 10) as $index => $article): ?>
+                                <article class="news-card mb-4 <?php echo $index === 0 ? 'featured-large' : ''; ?>">
+                                    <div class="row g-3">
+                                        <div class="<?php echo $article['featured_image'] ? 'col-8' : 'col-12'; ?>">
+                                            <div class="news-content">
+                                                <div class="news-meta mb-2">
+                                                    <span class="category-badge">
+                                                        <?php echo htmlspecialchars($article['category_name']); ?>
+                                                    </span>
+                                                    <span class="time-ago ms-2"><?php echo date('H:i', strtotime($article['published_at'] ?? $article['created_at'])); ?></span>
+                                                </div>
+                                                <h3 class="news-title">
+                                                    <a href="article.php?slug=<?php echo $article['slug']; ?>">
+                                                        <?php echo htmlspecialchars($article['title']); ?>
+                                                    </a>
+                                                </h3>
+                                                <p class="news-excerpt">
+                                                    <?php 
+                                                    $excerpt = $article['excerpt'];
+                                                    $length = $index === 0 ? 120 : 80;
+                                                    echo htmlspecialchars(strlen($excerpt) > $length ? substr($excerpt, 0, $length) . '...' : $excerpt); 
+                                                    ?>
+                                                </p>
+                                                <div class="news-footer">
+                                                    <span class="author"><?php echo htmlspecialchars($article['first_name'] . ' ' . $article['last_name']); ?></span>
+                                                    <span class="views ms-3"><i class="fas fa-eye"></i> <?php echo number_format($article['views']); ?></span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <h3 class="news-title">
-                                            <a href="article.php?slug=<?php echo $article['slug']; ?>">
-                                                <?php echo htmlspecialchars($article['title']); ?>
-                                            </a>
-                                        </h3>
-                                        <?php if ($index === 0): ?>
-                                        <p class="news-excerpt">
-                                            <?php echo htmlspecialchars(substr($article['excerpt'], 0, 150)); ?>...
-                                        </p>
+                                        <?php if ($article['featured_image']): ?>
+                                        <div class="col-4">
+                                            <div class="news-image">
+                                                <img src="<?php echo htmlspecialchars($article['featured_image']); ?>" 
+                                                     alt="<?php echo htmlspecialchars($article['title']); ?>" 
+                                                     class="img-fluid rounded">
+                                            </div>
+                                        </div>
                                         <?php endif; ?>
-                                        <div class="news-footer">
-                                            <span class="author"><?php echo htmlspecialchars($article['first_name'] . ' ' . $article['last_name']); ?></span>
-                                            <span class="views"><i class="fas fa-eye"></i> <?php echo number_format($article['views']); ?></span>
-                                        </div>
                                     </div>
                                 </article>
                                 <?php endforeach; ?>
@@ -239,7 +256,7 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                         <!-- Category Sections -->
                         <?php foreach ($homepage_categories as $category): ?>
                         <?php 
-                        $category_articles = $articleClass->getPublishedArticles(4, 0, $category['id']);
+                        $category_articles = $articleClass->getPublishedArticles(10, 0, $category['id']);
                         if (!empty($category_articles)): 
                         ?>
                         <section class="category-section">
@@ -343,24 +360,30 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                     $popular_articles = $articleClass->getPopularArticles(5);
                                     foreach ($popular_articles as $popular): 
                                     ?>
-                                    <article class="popular-item">
-                                        <?php if ($popular['featured_image']): ?>
-                                        <div class="popular-image">
-                                            <img src="<?php echo htmlspecialchars($popular['featured_image']); ?>" 
-                                                 alt="<?php echo htmlspecialchars($popular['title']); ?>" 
-                                                 class="img-fluid">
-                                        </div>
-                                        <?php endif; ?>
-                                        <div class="popular-content">
-                                            <h5 class="popular-title">
-                                                <a href="article.php?slug=<?php echo $popular['slug']; ?>">
-                                                    <?php echo htmlspecialchars($popular['title']); ?>
-                                                </a>
-                                            </h5>
-                                            <div class="popular-meta">
-                                                <span class="date"><?php echo date('M j', strtotime($popular['published_at'] ?? $popular['created_at'])); ?></span>
-                                                <span class="views"><?php echo number_format($popular['views']); ?> views</span>
+                                    <article class="popular-item mb-3">
+                                        <div class="row g-2">
+                                            <div class="<?php echo $popular['featured_image'] ? 'col-8' : 'col-12'; ?>">
+                                                <div class="popular-content">
+                                                    <h5 class="popular-title">
+                                                        <a href="article.php?slug=<?php echo $popular['slug']; ?>">
+                                                            <?php echo htmlspecialchars($popular['title']); ?>
+                                                        </a>
+                                                    </h5>
+                                                    <div class="popular-meta">
+                                                        <span class="date"><?php echo date('M j', strtotime($popular['published_at'] ?? $popular['created_at'])); ?></span>
+                                                        <span class="views"><?php echo number_format($popular['views']); ?> views</span>
+                                                    </div>
+                                                </div>
                                             </div>
+                                            <?php if ($popular['featured_image']): ?>
+                                            <div class="col-4">
+                                                <div class="popular-image">
+                                                    <img src="<?php echo htmlspecialchars($popular['featured_image']); ?>" 
+                                                         alt="<?php echo htmlspecialchars($popular['title']); ?>" 
+                                                         class="img-fluid rounded">
+                                                </div>
+                                            </div>
+                                            <?php endif; ?>
                                         </div>
                                     </article>
                                     <?php endforeach; ?>
