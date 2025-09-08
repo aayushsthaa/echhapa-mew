@@ -89,6 +89,7 @@ if ($_POST) {
     <title>Edit Article - <?php echo SITE_NAME; ?> Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="../public/css/admin.css" rel="stylesheet">
     <link href="../public/css/editor.css" rel="stylesheet">
     <style>
@@ -128,33 +129,39 @@ if ($_POST) {
 </head>
 <body>
     <div class="admin-wrapper">
-        <!-- Sidebar -->
+        <!-- Include sidebar navigation (same as create page) -->
         <nav class="sidebar">
             <div class="sidebar-header">
                 <h4><i class="fas fa-newspaper"></i> News Admin</h4>
+                <p class="text-muted">v1.0</p>
             </div>
+            
             <ul class="sidebar-menu">
                 <li class="menu-item">
-                    <a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    <a href="dashboard.php">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
                 </li>
+                
                 <li class="menu-header">Content Management</li>
                 <li class="menu-item">
-                    <a href="articles.php"><i class="fas fa-file-alt"></i> Articles</a>
+                    <a href="articles.php">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Articles</span>
+                    </a>
                 </li>
                 <li class="menu-item active">
-                    <a href="article-create.php"><i class="fas fa-plus-circle"></i> New Article</a>
+                    <a href="article-create.php">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>New Article</span>
+                    </a>
                 </li>
                 <li class="menu-item">
-                    <a href="categories.php"><i class="fas fa-tags"></i> Categories</a>
-                </li>
-                <li class="menu-item">
-                    <a href="media.php"><i class="fas fa-images"></i> Media Library</a>
-                </li>
-                <li class="menu-item">
-                    <a href="ads.php"><i class="fas fa-bullhorn"></i> Advertisements</a>
-                </li>
-                <li class="menu-item">
-                    <a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    <a href="categories.php">
+                        <i class="fas fa-tags"></i>
+                        <span>Categories</span>
+                    </a>
                 </li>
             </ul>
         </nav>
@@ -171,10 +178,19 @@ if ($_POST) {
                         <i class="fas fa-arrow-left"></i> Back to Articles
                     </a>
                     <?php if ($article_data['status'] === 'published'): ?>
-                    <a href="../article.php?slug=<?php echo $article_data['slug']; ?>" target="_blank" class="btn btn-outline-success btn-sm">
+                    <a href="../article.php?slug=<?php echo $article_data['slug']; ?>" target="_blank" class="btn btn-outline-success btn-sm me-2">
                         <i class="fas fa-external-link-alt"></i> View Article
                     </a>
                     <?php endif; ?>
+                    <div class="dropdown">
+                        <button class="btn btn-link dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i>
+                            <?php echo $_SESSION['user_name'] ?? 'Admin'; ?>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             
@@ -215,22 +231,10 @@ if ($_POST) {
                                         </div>
                                         
                                         <div class="mb-3">
-                                            <label class="form-label">Content *</label>
-                                            <div class="editor-container">
-                                                <div class="editor-toolbar">
-                                                    <button type="button" onclick="formatText('bold')"><i class="fas fa-bold"></i></button>
-                                                    <button type="button" onclick="formatText('italic')"><i class="fas fa-italic"></i></button>
-                                                    <button type="button" onclick="formatText('underline')"><i class="fas fa-underline"></i></button>
-                                                    <button type="button" onclick="formatText('insertOrderedList')"><i class="fas fa-list-ol"></i></button>
-                                                    <button type="button" onclick="formatText('insertUnorderedList')"><i class="fas fa-list-ul"></i></button>
-                                                    <button type="button" onclick="insertLink()"><i class="fas fa-link"></i></button>
-                                                    <button type="button" onclick="formatText('insertHorizontalRule')"><i class="fas fa-minus"></i></button>
-                                                </div>
-                                                <div class="editor-content" contenteditable="true" id="contentEditor">
-                                                    <?php echo $article_data['content']; ?>
-                                                </div>
-                                            </div>
-                                            <textarea name="content" id="hiddenContent" style="display:none;" required><?php echo htmlspecialchars($article_data['content']); ?></textarea>
+                                            <label class="form-label">Article Content *</label>
+                                            <p class="text-muted mb-3">Use the content blocks below to create rich articles with text, images, videos, and quotes.</p>
+                                            <div id="content-blocks-editor"></div>
+                                            <textarea name="content" id="finalContent" style="display:none;" required><?php echo htmlspecialchars($article_data['content']); ?></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -272,10 +276,24 @@ if ($_POST) {
                                         </div>
                                         
                                         <div class="mb-3">
-                                            <label for="featured_image" class="form-label">Featured Image URL</label>
-                                            <input type="url" class="form-control" id="featured_image" name="featured_image" 
-                                                   value="<?php echo htmlspecialchars($article_data['featured_image'] ?? ''); ?>">
-                                            <small class="text-muted">Enter image URL or use media library</small>
+                                            <label for="featured_image" class="form-label">Featured Image</label>
+                                            <div class="featured-image-upload">
+                                                <div class="upload-area" id="featuredImageUpload">
+                                                    <?php if ($article_data['featured_image']): ?>
+                                                        <img src="<?php echo htmlspecialchars($article_data['featured_image']); ?>" 
+                                                             alt="Featured image" style="max-width: 100%; height: auto;">
+                                                    <?php else: ?>
+                                                        <div class="upload-placeholder">
+                                                            <i class="fas fa-image"></i>
+                                                            <p>Click to upload featured image</p>
+                                                            <p class="text-muted">Recommended: 1200x600px</p>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <input type="file" id="featuredImageFile" accept="image/*" style="display: none;">
+                                                <input type="hidden" name="featured_image" id="featuredImageUrl" 
+                                                       value="<?php echo htmlspecialchars($article_data['featured_image'] ?? ''); ?>">
+                                            </div>
                                         </div>
                                         
                                         <div class="mb-3">
@@ -325,36 +343,91 @@ if ($_POST) {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../public/js/editor.js"></script>
+    <script src="../public/js/admin.js"></script>
+    <script src="../public/js/content-blocks.js"></script>
     <script>
+        // Featured Image Upload Handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const featuredImageUpload = document.getElementById('featuredImageUpload');
+            const featuredImageFile = document.getElementById('featuredImageFile');
+            const featuredImageUrl = document.getElementById('featuredImageUrl');
+            
+            if (featuredImageUpload && featuredImageFile) {
+                featuredImageUpload.onclick = function() {
+                    featuredImageFile.click();
+                };
+                
+                featuredImageFile.onchange = async function() {
+                    const file = this.files[0];
+                    if (!file) return;
+                    
+                    featuredImageUpload.innerHTML = '<div class="upload-progress"><i class="fas fa-spinner fa-spin"></i> Uploading...</div>';
+                    
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    
+                    try {
+                        const response = await fetch('upload-image.php', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            featuredImageUpload.innerHTML = `<img src="${result.url}" alt="Featured image" style="max-width: 100%; height: auto;">`;
+                            featuredImageUrl.value = result.url;
+                        } else {
+                            featuredImageUpload.innerHTML = `<div class="upload-error"><i class="fas fa-exclamation-triangle"></i><p>Upload failed: ${result.message}</p></div>`;
+                        }
+                    } catch (error) {
+                        featuredImageUpload.innerHTML = `<div class="upload-error"><i class="fas fa-exclamation-triangle"></i><p>Upload failed: Network error</p></div>`;
+                    }
+                };
+            }
+            
+            // Form Submission Handler
+            const form = document.querySelector('form[data-validate]');
+            if (form) {
+                form.onsubmit = function(e) {
+                    // Collect content from blocks editor
+                    if (typeof contentEditor !== 'undefined') {
+                        const blocks = contentEditor.getContent();
+                        const contentJson = JSON.stringify(blocks);
+                        document.getElementById('finalContent').value = contentJson;
+                    }
+                    
+                    // Validate required fields
+                    const title = document.getElementById('title').value.trim();
+                    const finalContent = document.getElementById('finalContent').value.trim();
+                    
+                    if (!title) {
+                        alert('Please enter a title.');
+                        e.preventDefault();
+                        return false;
+                    }
+                    
+                    if (!finalContent || finalContent === '[]') {
+                        alert('Please add some content to your article.');
+                        e.preventDefault();
+                        return false;
+                    }
+                    
+                    return true;
+                };
+            }
+        });
+        
+        // Schedule Options Toggle
         function toggleScheduleOptions() {
             const status = document.getElementById('status').value;
             const scheduleOptions = document.getElementById('scheduleOptions');
-            scheduleOptions.style.display = status === 'scheduled' ? 'block' : 'none';
-        }
-        
-        function formatText(command) {
-            document.execCommand(command, false, null);
-            document.getElementById('hiddenContent').value = document.getElementById('contentEditor').innerHTML;
-        }
-        
-        function insertLink() {
-            const url = prompt('Enter the URL:');
-            if (url) {
-                document.execCommand('createLink', false, url);
-                document.getElementById('hiddenContent').value = document.getElementById('contentEditor').innerHTML;
+            if (status === 'scheduled') {
+                scheduleOptions.style.display = 'block';
+            } else {
+                scheduleOptions.style.display = 'none';
             }
         }
-        
-        // Update hidden content field when editor content changes
-        document.getElementById('contentEditor').addEventListener('input', function() {
-            document.getElementById('hiddenContent').value = this.innerHTML;
-        });
-        
-        // Initialize editor content
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('hiddenContent').value = document.getElementById('contentEditor').innerHTML;
-        });
     </script>
 </body>
 </html>

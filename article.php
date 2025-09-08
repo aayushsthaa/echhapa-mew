@@ -355,7 +355,223 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </footer>
 
+    <!-- Comments Section -->
+    <section class="comments-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="comments-container">
+                        <h4 class="comments-title">
+                            <i class="fas fa-comments"></i> 
+                            Comments 
+                            <span class="comments-count" id="commentsCount">
+                                <?php 
+                                require_once 'classes/Comment.php';
+                                $commentClass = new Comment();
+                                $commentCount = $commentClass->getCommentCount($article['id']);
+                                echo "($commentCount)";
+                                ?>
+                            </span>
+                        </h4>
+                        
+                        <!-- Comment Form -->
+                        <div class="comment-form-section">
+                            <h5>Leave a Comment</h5>
+                            <form id="commentForm" class="comment-form">
+                                <input type="hidden" name="article_id" value="<?php echo $article['id']; ?>">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <input type="text" class="form-control" name="author_name" placeholder="Your Name *" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <input type="email" class="form-control" name="author_email" placeholder="Your Email *" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control" name="content" rows="4" placeholder="Write your comment here..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i> Post Comment
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Comments List -->
+                        <div class="comments-list" id="commentsList">
+                            <?php 
+                            $comments = $commentClass->getCommentsByArticle($article['id']);
+                            foreach ($comments as $comment): 
+                            ?>
+                            <div class="comment-item" data-comment-id="<?php echo $comment['id']; ?>">
+                                <div class="comment-header">
+                                    <div class="comment-author">
+                                        <i class="fas fa-user-circle"></i>
+                                        <strong><?php echo htmlspecialchars($comment['author_name']); ?></strong>
+                                    </div>
+                                    <div class="comment-date">
+                                        <?php echo date('M j, Y \a\t g:i A', strtotime($comment['created_at'])); ?>
+                                    </div>
+                                </div>
+                                <div class="comment-content">
+                                    <?php echo nl2br(htmlspecialchars($comment['content'])); ?>
+                                </div>
+                                <div class="comment-actions">
+                                    <button class="btn btn-link btn-sm reply-btn" data-comment-id="<?php echo $comment['id']; ?>">
+                                        <i class="fas fa-reply"></i> Reply
+                                    </button>
+                                </div>
+                                
+                                <!-- Replies -->
+                                <?php if (!empty($comment['replies'])): ?>
+                                <div class="comment-replies">
+                                    <?php foreach ($comment['replies'] as $reply): ?>
+                                    <div class="comment-item reply">
+                                        <div class="comment-header">
+                                            <div class="comment-author">
+                                                <i class="fas fa-user-circle"></i>
+                                                <strong><?php echo htmlspecialchars($reply['author_name']); ?></strong>
+                                            </div>
+                                            <div class="comment-date">
+                                                <?php echo date('M j, Y \a\t g:i A', strtotime($reply['created_at'])); ?>
+                                            </div>
+                                        </div>
+                                        <div class="comment-content">
+                                            <?php echo nl2br(htmlspecialchars($reply['content'])); ?>
+                                        </div>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                                <?php endif; ?>
+                                
+                                <!-- Reply Form (hidden by default) -->
+                                <div class="reply-form" id="replyForm<?php echo $comment['id']; ?>" style="display: none;">
+                                    <form class="comment-reply-form" data-parent-id="<?php echo $comment['id']; ?>">
+                                        <input type="hidden" name="article_id" value="<?php echo $article['id']; ?>">
+                                        <input type="hidden" name="parent_id" value="<?php echo $comment['id']; ?>">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <input type="text" class="form-control" name="author_name" placeholder="Your Name *" required>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <input type="email" class="form-control" name="author_email" placeholder="Your Email *" required>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <textarea class="form-control" name="content" rows="3" placeholder="Write your reply..." required></textarea>
+                                        </div>
+                                        <div class="reply-actions">
+                                            <button type="submit" class="btn btn-primary btn-sm">Post Reply</button>
+                                            <button type="button" class="btn btn-secondary btn-sm cancel-reply">Cancel</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="public/js/main.js"></script>
+    <script>
+        // Comments functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Comment form submission
+            const commentForm = document.getElementById('commentForm');
+            if (commentForm) {
+                commentForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    submitComment(this);
+                });
+            }
+            
+            // Reply button handlers
+            document.querySelectorAll('.reply-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const commentId = this.dataset.commentId;
+                    toggleReplyForm(commentId);
+                });
+            });
+            
+            // Cancel reply buttons
+            document.querySelectorAll('.cancel-reply').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const replyForm = this.closest('.reply-form');
+                    replyForm.style.display = 'none';
+                });
+            });
+            
+            // Reply form submissions
+            document.querySelectorAll('.comment-reply-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    submitComment(this);
+                });
+            });
+        });
+        
+        function submitComment(form) {
+            const formData = new FormData(form);
+            
+            fetch('submit-comment.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    showMessage('Comment submitted successfully! It will appear after moderation.', 'success');
+                    
+                    // Reset form
+                    form.reset();
+                    
+                    // Hide reply form if it's a reply
+                    if (form.classList.contains('comment-reply-form')) {
+                        form.closest('.reply-form').style.display = 'none';
+                    }
+                } else {
+                    showMessage(data.message || 'Failed to submit comment. Please try again.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessage('Network error. Please try again.', 'error');
+            });
+        }
+        
+        function toggleReplyForm(commentId) {
+            const replyForm = document.getElementById('replyForm' + commentId);
+            if (replyForm.style.display === 'none' || !replyForm.style.display) {
+                replyForm.style.display = 'block';
+                replyForm.querySelector('input[name="author_name"]').focus();
+            } else {
+                replyForm.style.display = 'none';
+            }
+        }
+        
+        function showMessage(message, type) {
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+            const alert = document.createElement('div');
+            alert.className = `alert ${alertClass} alert-dismissible fade show`;
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            const commentsSection = document.querySelector('.comments-section');
+            commentsSection.insertBefore(alert, commentsSection.firstChild);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+    </script>
 </body>
 </html>
