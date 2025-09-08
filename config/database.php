@@ -120,25 +120,14 @@ class Database {
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
 
-        -- Create comments table
-        CREATE TABLE IF NOT EXISTS comments (
-            id SERIAL PRIMARY KEY,
-            article_id INTEGER REFERENCES articles(id) ON DELETE CASCADE,
-            parent_id INTEGER REFERENCES comments(id) ON DELETE CASCADE,
-            author_name VARCHAR(100) NOT NULL,
-            author_email VARCHAR(100) NOT NULL,
-            content TEXT NOT NULL,
-            status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
+        -- Comments table removed as requested
 
         -- Create homepage_sections table
         CREATE TABLE IF NOT EXISTS homepage_sections (
             id SERIAL PRIMARY KEY,
             section_name VARCHAR(50) NOT NULL,
             section_title VARCHAR(100) NOT NULL,
-            layout_style VARCHAR(20) DEFAULT 'grid' CHECK (layout_style IN ('banner', 'grid', 'list')),
+            layout_style VARCHAR(20) DEFAULT 'grid' CHECK (layout_style IN ('banner', 'grid', 'list', 'carousel', 'cards', 'featured', 'magazine', 'minimal')),
             article_limit INTEGER DEFAULT 5,
             is_enabled BOOLEAN DEFAULT true,
             display_order INTEGER DEFAULT 0,
@@ -162,7 +151,11 @@ class Database {
             homepage_visible BOOLEAN DEFAULT true,
             display_order INTEGER DEFAULT 0,
             layout_type VARCHAR(50) DEFAULT 'grid',
+            layout_style VARCHAR(50) DEFAULT 'grid',
             max_articles INTEGER DEFAULT 6,
+            articles_limit INTEGER DEFAULT 6,
+            show_excerpts BOOLEAN DEFAULT true,
+            show_images BOOLEAN DEFAULT true,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
@@ -252,8 +245,8 @@ class Database {
 
         // Insert default category display settings
         $conn->exec("
-        INSERT INTO category_display_settings (category_id, homepage_visible, display_order, layout_type, max_articles)
-        SELECT id, true, id, 'grid', 6 FROM categories
+        INSERT INTO category_display_settings (category_id, homepage_visible, display_order, layout_type, layout_style, max_articles, articles_limit, show_excerpts, show_images)
+        SELECT id, true, id, 'grid', 'grid', 6, 6, true, true FROM categories
         ON CONFLICT DO NOTHING;
         ");
 
