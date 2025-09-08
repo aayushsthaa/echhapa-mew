@@ -461,3 +461,53 @@ body {
     background-color: #cff4fc;
     color: #055160;
 }
+
+/* Featured Image Upload Styles */
+.featured-image-upload .upload-area {
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.featured-image-upload .upload-area:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(102, 126, 234, 0.05);
+}
+
+.featured-image-upload .upload-area img {
+    border-radius: 8px;
+    max-width: 100%;
+    height: auto;
+}
+
+.upload-progress {
+    color: var(--primary-color);
+    padding: 20px;
+}
+
+.upload-progress i {
+    margin-right: 8px;
+}
+
+.upload-error {
+    color: #dc3545;
+    padding: 20px;
+}
+
+.upload-error i {
+    margin-right: 8px;
+}
+
+.upload-placeholder {
+    color: var(--text-muted);
+}
+
+.upload-placeholder i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: block;
+}

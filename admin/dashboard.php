@@ -65,12 +65,6 @@ $recent_articles = $article->getAllArticles(5);
                         <span>Categories</span>
                     </a>
                 </li>
-                <li class="menu-item">
-                    <a href="media.php">
-                        <i class="fas fa-images"></i>
-                        <span>Media Library</span>
-                    </a>
-                </li>
                 
                 <li class="menu-header">Layout & Design</li>
                 <li class="menu-item">

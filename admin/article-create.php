@@ -316,6 +316,19 @@ if ($_POST) {
             const featuredImageFile = document.getElementById('featuredImageFile');
             const featuredImageUrl = document.getElementById('featuredImageUrl');
             
+            // URL input handler - show preview when URL is entered
+            if (featuredImageUrl) {
+                featuredImageUrl.addEventListener('input', function() {
+                    const url = this.value.trim();
+                    if (url && isValidImageUrl(url)) {
+                        updateImagePreview(url);
+                    } else if (!url) {
+                        resetUploadArea();
+                    }
+                });
+            }
+            
+            // Upload handler
             if (featuredImageUpload && featuredImageFile) {
                 featuredImageUpload.onclick = function() {
                     featuredImageFile.click();
@@ -339,8 +352,8 @@ if ($_POST) {
                         const result = await response.json();
                         
                         if (result.success) {
-                            featuredImageUpload.innerHTML = `<img src="${result.url}" alt="Featured image" style="max-width: 100%; height: auto;">`;
                             featuredImageUrl.value = result.url;
+                            updateImagePreview(result.url);
                         } else {
                             featuredImageUpload.innerHTML = `<div class="upload-error"><i class="fas fa-exclamation-triangle"></i><p>Upload failed: ${result.message}</p></div>`;
                         }
@@ -348,6 +361,31 @@ if ($_POST) {
                         featuredImageUpload.innerHTML = `<div class="upload-error"><i class="fas fa-exclamation-triangle"></i><p>Upload failed: Network error</p></div>`;
                     }
                 };
+            }
+            
+            function updateImagePreview(url) {
+                if (featuredImageUpload) {
+                    featuredImageUpload.innerHTML = `<img src="${url}" alt="Featured image" style="max-width: 100%; height: auto;">`;
+                }
+            }
+            
+            function resetUploadArea() {
+                if (featuredImageUpload) {
+                    featuredImageUpload.innerHTML = `<div class="upload-placeholder">
+                        <i class="fas fa-upload"></i>
+                        <p>Or click here to upload from your PC</p>
+                        <p class="text-muted">JPG, PNG, GIF, WebP (Max: 5MB)</p>
+                    </div>`;
+                }
+            }
+            
+            function isValidImageUrl(string) {
+                try {
+                    new URL(string);
+                    return string.match(/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i);
+                } catch (_) {
+                    return false;
+                }
             }
             
             // Form Submission Handler
