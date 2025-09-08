@@ -114,12 +114,21 @@ h6 {
     font-family: inherit;
     font-size: inherit;
     color: inherit;
-    padding: 0;
+    padding: 1rem 1.5rem;
     text-decoration: none;
+    display: block;
+    white-space: nowrap;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 3px solid transparent;
+    transition: var(--transition);
 }
 
 .category-link.dropdown-toggle:hover {
     color: var(--primary-red);
+    border-bottom-color: var(--primary-red);
+    background: var(--white);
 }
 
 /* Carousel Layout Styles */
@@ -612,6 +621,7 @@ img {
 .categories-nav {
     background: var(--gray-100);
     border-bottom: 1px solid var(--border-color);
+    padding: 0;
 }
 
 .categories-list {
