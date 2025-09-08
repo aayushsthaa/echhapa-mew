@@ -354,6 +354,11 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                                             <option value="grid" <?php echo $category['layout_style'] === 'grid' ? 'selected' : ''; ?>>Grid View</option>
                                                             <option value="banner" <?php echo $category['layout_style'] === 'banner' ? 'selected' : ''; ?>>Banner Style</option>
                                                             <option value="card" <?php echo $category['layout_style'] === 'card' ? 'selected' : ''; ?>>Card Layout</option>
+                                                            <option value="carousel" <?php echo $category['layout_style'] === 'carousel' ? 'selected' : ''; ?>>Carousel</option>
+                                                            <option value="cards" <?php echo $category['layout_style'] === 'cards' ? 'selected' : ''; ?>>Modern Cards</option>
+                                                            <option value="featured" <?php echo $category['layout_style'] === 'featured' ? 'selected' : ''; ?>>Featured Layout</option>
+                                                            <option value="magazine" <?php echo $category['layout_style'] === 'magazine' ? 'selected' : ''; ?>>Magazine Style (3:2 + Text)</option>
+                                                            <option value="minimal" <?php echo $category['layout_style'] === 'minimal' ? 'selected' : ''; ?>>Minimal (Text Only)</option>
                                                         </select>
                                                     </div>
                                                 </div>
