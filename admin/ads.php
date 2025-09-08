@@ -26,7 +26,7 @@ if ($_POST) {
                     $error = 'Ad title is required';
                 } else {
                     $stmt = $conn->prepare("
-                        INSERT INTO ads (title, type, position, content, click_url, image_url, status, start_date, end_date, created_by) 
+                        INSERT INTO ads (title, ad_type, position, description, click_url, image_url, status, start_date, end_date, created_by) 
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ");
                     
