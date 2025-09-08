@@ -658,7 +658,29 @@ img {
         padding: 1rem 0;
     }
     
-    /* Better sidebar proportions for all laptop sizes */
+    /* Hero section laptop optimization */
+    .col-lg-6 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+}
+
+/* Smaller Laptops (991px - 1366px) - Better 3:2 Content to Sidebar Ratio */
+@media (min-width: 991px) and (max-width: 1366px) {
+    .col-lg-9 {
+        flex: 0 0 60% !important;
+        max-width: 60% !important;
+    }
+    
+    .col-lg-3 {
+        flex: 0 0 38% !important;
+        max-width: 38% !important;
+        margin-left: 2%;
+    }
+}
+
+/* Larger Laptops and Desktops (1367px+) - Keep Original Proportions */
+@media (min-width: 1367px) and (max-width: 1600px) {
     .col-lg-9 {
         flex: 0 0 70% !important;
         max-width: 70% !important;
@@ -668,12 +690,6 @@ img {
         flex: 0 0 28% !important;
         max-width: 28% !important;
         margin-left: 2%;
-    }
-    
-    /* Hero section laptop optimization */
-    .col-lg-6 {
-        flex: 0 0 50% !important;
-        max-width: 50% !important;
     }
 }
 
