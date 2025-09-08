@@ -328,8 +328,11 @@ img {
     overflow: hidden;
     background: var(--primary-black);
     color: var(--white) !important;
-    aspect-ratio: 3/2;
-    min-height: 400px;
+    aspect-ratio: 3/2 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: unset !important;
+    max-height: unset !important;
 }
 
 .hero-image {
@@ -999,4 +1002,4 @@ img {
 .align-items-center { align-items: center; }
 .gap-1 { gap: 0.5rem; }
 .gap-2 { gap: 1rem; }
-.gap-3 { gap: 1.5rem; }
+.gap-3 { gap: 1.5rem; }/* Cache busting comment - Mon Sep  8 06:07:22 AM UTC 2025 */
