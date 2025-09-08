@@ -215,12 +215,147 @@ class ProfessionalEditor {
     }
 
     insertImage() {
-        const url = prompt('Enter image URL:', 'https://');
-        if (url) {
-            const alt = prompt('Enter alt text (optional):', '');
-            const img = `<img src="${url}" alt="${alt}" style="max-width: 100%; height: auto;">`;
-            document.execCommand('insertHTML', false, img);
-        }
+        // Create a modal for image insertion options
+        const modal = document.createElement('div');
+        modal.className = 'image-insert-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        `;
+        
+        modal.innerHTML = `
+            <div class="modal-content" style="background: white; padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
+                <h5 style="margin-bottom: 1rem;">Insert Image</h5>
+                <div class="tab-buttons" style="margin-bottom: 1rem; border-bottom: 1px solid #dee2e6;">
+                    <button type="button" class="tab-btn active" data-tab="upload" style="padding: 0.5rem 1rem; border: none; background: none; border-bottom: 2px solid #007bff; cursor: pointer;">Upload File</button>
+                    <button type="button" class="tab-btn" data-tab="url" style="padding: 0.5rem 1rem; border: none; background: none; border-bottom: 2px solid transparent; cursor: pointer; margin-left: 1rem;">From URL</button>
+                </div>
+                
+                <div class="tab-content">
+                    <div class="tab-panel" id="upload-panel">
+                        <div class="upload-area" style="border: 2px dashed #dee2e6; padding: 2rem; text-align: center; border-radius: 4px; cursor: pointer; margin-bottom: 1rem;">
+                            <i class="fas fa-upload" style="font-size: 2rem; color: #6c757d; margin-bottom: 1rem;"></i>
+                            <p style="margin: 0; color: #6c757d;">Click to select image or drag and drop</p>
+                            <small style="color: #6c757d;">JPG, PNG, GIF, WebP (Max: 5MB)</small>
+                        </div>
+                        <input type="file" accept="image/*" style="display: none;">
+                    </div>
+                    
+                    <div class="tab-panel" id="url-panel" style="display: none;">
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem;">Image URL:</label>
+                            <input type="url" class="form-control" placeholder="https://example.com/image.jpg" style="width: 100%; padding: 0.5rem; border: 1px solid #dee2e6; border-radius: 4px;">
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem;">Alt Text (optional):</label>
+                            <input type="text" class="form-control" placeholder="Describe the image" style="width: 100%; padding: 0.5rem; border: 1px solid #dee2e6; border-radius: 4px;">
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: right; margin-top: 1.5rem;">
+                    <button type="button" class="btn-cancel" style="padding: 0.5rem 1rem; margin-right: 0.5rem; border: 1px solid #dee2e6; background: white; border-radius: 4px; cursor: pointer;">Cancel</button>
+                    <button type="button" class="btn-insert" style="padding: 0.5rem 1rem; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Insert Image</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Tab switching
+        const tabButtons = modal.querySelectorAll('.tab-btn');
+        const tabPanels = modal.querySelectorAll('.tab-panel');
+        
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabButtons.forEach(b => {
+                    b.classList.remove('active');
+                    b.style.borderBottomColor = 'transparent';
+                });
+                btn.classList.add('active');
+                btn.style.borderBottomColor = '#007bff';
+                
+                tabPanels.forEach(panel => panel.style.display = 'none');
+                modal.querySelector(`#${btn.dataset.tab}-panel`).style.display = 'block';
+            });
+        });
+        
+        // File upload handling
+        const uploadArea = modal.querySelector('.upload-area');
+        const fileInput = modal.querySelector('input[type="file"]');
+        
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            uploadArea.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #007bff;"></i><p style="margin-top: 1rem; color: #007bff;">Uploading...</p>';
+            
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            try {
+                const response = await fetch('../admin/upload-image.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const img = `<img src="${result.url}" alt="${file.name}" style="max-width: 100%; height: auto; margin: 10px 0;">`;
+                    document.execCommand('insertHTML', false, img);
+                    document.body.removeChild(modal);
+                } else {
+                    uploadArea.innerHTML = `<i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #dc3545;"></i><p style="margin-top: 1rem; color: #dc3545;">Upload failed: ${result.message}</p>`;
+                }
+            } catch (error) {
+                uploadArea.innerHTML = '<i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #dc3545;"></i><p style="margin-top: 1rem; color: #dc3545;">Upload failed</p>';
+            }
+        });
+        
+        // URL insertion handling
+        const urlInput = modal.querySelector('#url-panel input[type="url"]');
+        const altInput = modal.querySelector('#url-panel input[type="text"]');
+        const insertBtn = modal.querySelector('.btn-insert');
+        const cancelBtn = modal.querySelector('.btn-cancel');
+        
+        insertBtn.addEventListener('click', () => {
+            const activePanel = modal.querySelector('.tab-panel:not([style*="display: none"])');
+            
+            if (activePanel.id === 'url-panel') {
+                const url = urlInput.value.trim();
+                const alt = altInput.value.trim();
+                
+                if (url) {
+                    const img = `<img src="${url}" alt="${alt}" style="max-width: 100%; height: auto; margin: 10px 0;">`;
+                    document.execCommand('insertHTML', false, img);
+                    document.body.removeChild(modal);
+                } else {
+                    alert('Please enter an image URL');
+                }
+            }
+        });
+        
+        cancelBtn.addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+        
+        // Close on background click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                document.body.removeChild(modal);
+            }
+        });
     }
 
     insertTable() {
