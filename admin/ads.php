@@ -217,8 +217,8 @@ $ads = $ads_stmt->fetchAll(PDO::FETCH_ASSOC);
                                                     <br><small class="text-muted">by <?php echo htmlspecialchars($ad['first_name'] . ' ' . $ad['last_name']); ?></small>
                                                 </td>
                                                 <td>
-                                                    <span class="ad-type-badge ad-type-<?php echo $ad['type']; ?>">
-                                                        <?php echo ucfirst($ad['type']); ?>
+                                                    <span class="ad-type-badge ad-type-<?php echo $ad['ad_type']; ?>">
+                                                        <?php echo ucfirst($ad['ad_type'] ?? 'banner'); ?>
                                                     </span>
                                                 </td>
                                                 <td><?php echo ucfirst($ad['position']); ?></td>
