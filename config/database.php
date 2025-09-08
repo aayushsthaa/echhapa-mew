@@ -272,8 +272,8 @@ class Database {
         ];
 
         $stmt = $conn->prepare(
-            "INSERT INTO articles (title, slug, excerpt, content, category_id, author_id, status, is_featured, is_breaking, views, published_at) " .
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP - (? || ' hours')::interval) " .
+            "INSERT INTO articles (title, slug, excerpt, content, category_id, author_id, status, is_featured, is_breaking, views, featured_image, published_at) " .
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP - (? || ' hours')::interval) " .
             "ON CONFLICT (slug) DO NOTHING"
         );
 
@@ -290,6 +290,7 @@ class Database {
                 $article[7] ? 't' : 'f', // is_featured
                 $article[8] ? 't' : 'f', // is_breaking
                 $article[9], // views
+                'https://images.pexels.com/photos/28468503/pexels-photo-28468503.jpeg', // featured_image
                 $hoursAgo // hours ago
             ]);
         }
