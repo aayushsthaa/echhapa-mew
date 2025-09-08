@@ -184,7 +184,6 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                     <a href="categories.php"><i class="fas fa-tags"></i> Categories</a>
                 </li>
                 <li class="menu-item">
-                    <a href="media.php"><i class="fas fa-images"></i> Media Library</a>
                 </li>
                 <li class="menu-item">
                     <a href="ads.php"><i class="fas fa-bullhorn"></i> Advertisements</a>

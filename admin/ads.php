@@ -144,7 +144,6 @@ $ads = $ads_stmt->fetchAll(PDO::FETCH_ASSOC);
                     <a href="categories.php"><i class="fas fa-tags"></i> Categories</a>
                 </li>
                 <li class="menu-item">
-                    <a href="media.php"><i class="fas fa-images"></i> Media Library</a>
                 </li>
                 <li class="menu-item active">
                     <a href="ads.php"><i class="fas fa-bullhorn"></i> Advertisements</a>
@@ -359,7 +358,6 @@ $ads = $ads_stmt->fetchAll(PDO::FETCH_ASSOC);
                             <div class="input-group">
                                 <input type="url" class="form-control" name="image_url" id="image_url" 
                                        placeholder="https://example.com/ad-image.jpg" onchange="updateAdPreview()">
-                                <button type="button" class="btn btn-outline-secondary" onclick="openMediaLibrary()">
                                     <i class="fas fa-images"></i> Browse
                                 </button>
                             </div>
@@ -441,8 +439,6 @@ $ads = $ads_stmt->fetchAll(PDO::FETCH_ASSOC);
             alert('Edit functionality will be implemented');
         }
         
-        function openMediaLibrary() {
-            window.open('media.php', 'mediaLibrary', 'width=800,height=600');
         }
         
         // Auto-update preview on input change

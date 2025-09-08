@@ -216,7 +216,6 @@ $recent_articles = $article->getAllArticles(5);
                                             </a>
                                         </div>
                                         <div class="col-md-2 col-6 mb-3">
-                                            <a href="media.php" class="quick-action">
                                                 <i class="fas fa-upload text-success"></i>
                                                 <span>Upload Media</span>
                                             </a>
