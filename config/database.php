@@ -166,6 +166,42 @@ class Database {
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
+
+        -- Create ads table
+        CREATE TABLE IF NOT EXISTS ads (
+            id SERIAL PRIMARY KEY,
+            title VARCHAR(255) NOT NULL,
+            description TEXT,
+            image_url VARCHAR(500),
+            click_url VARCHAR(500) NOT NULL,
+            ad_type VARCHAR(50) DEFAULT 'banner' CHECK (ad_type IN ('banner', 'sidebar', 'inline', 'popup')),
+            position VARCHAR(100) DEFAULT 'header',
+            status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'expired')),
+            start_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            end_date TIMESTAMP,
+            budget DECIMAL(10,2) DEFAULT 0.00,
+            cost_per_click DECIMAL(8,2) DEFAULT 0.00,
+            created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        -- Create ad tracking tables
+        CREATE TABLE IF NOT EXISTS ad_impressions (
+            id SERIAL PRIMARY KEY,
+            ad_id INTEGER REFERENCES ads(id) ON DELETE CASCADE,
+            user_ip VARCHAR(45),
+            user_agent TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS ad_clicks (
+            id SERIAL PRIMARY KEY,
+            ad_id INTEGER REFERENCES ads(id) ON DELETE CASCADE,
+            user_ip VARCHAR(45),
+            user_agent TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
         ";
 
         $conn->exec($sql);

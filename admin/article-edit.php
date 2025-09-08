@@ -64,8 +64,9 @@ if ($_POST) {
             'status' => $status,
             'published_at' => ($status === 'published' && !$article_data['published_at']) ? date('Y-m-d H:i:s') : $article_data['published_at'],
             'scheduled_at' => $scheduled_at,
-            'meta_title' => $title,
-            'meta_description' => $excerpt,
+            'meta_title' => sanitize($_POST['meta_title'] ?? $title),
+            'meta_description' => sanitize($_POST['meta_description'] ?? $excerpt),
+            'meta_keywords' => sanitize($_POST['meta_keywords'] ?? ''),
             'is_featured' => $is_featured,
             'is_breaking' => $is_breaking,
             'updated_at' => date('Y-m-d H:i:s')
