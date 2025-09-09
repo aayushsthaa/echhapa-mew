@@ -33,6 +33,13 @@ Preferred communication style: Simple, everyday language.
 
 # Recent Changes (September 2025)
 
+## Article Form Validation Fix (September 9, 2025)
+- **Form Submission Error Fix**: Resolved "invalid form control with name='content' is not focusable" error by removing required attribute from hidden textarea and implementing proper JavaScript validation
+- **Validation Timing Fix**: Modified form submission handler to populate content BEFORE validation runs instead of during onsubmit
+- **Content Editor Integration**: Enhanced content blocks editor integration with proper error handling and fallback mechanisms
+- **Image Clickability Fix**: Made all article images clickable across different layout styles (magazine, grid, cards, carousel)
+- **Ads System Improvements**: Fixed field reference bugs in ads display system and enhanced edit/preview functionality
+
 ## Enhanced Content Blocks System (September 9, 2025)
 - **Modular Content Creation**: Completely rebuilt article creation with comprehensive content blocks system
 - **Rich Text Integration**: Successfully integrated custom ProfessionalEditor into text blocks with proper content syncing
