@@ -18,11 +18,11 @@ class Database {
             $this->password = $url['pass'];
             $this->port = isset($url['port']) ? $url['port'] : '5432';
         } else {
-            // Fallback to individual environment variables with Replit defaults
-            $this->host = $_SERVER['PGHOST'] ?? getenv('PGHOST') ?: 'ep-dawn-pond-af0j98yz.c-2.us-west-2.aws.neon.tech';
-            $this->db_name = $_SERVER['PGDATABASE'] ?? getenv('PGDATABASE') ?: 'neondb';
-            $this->username = $_SERVER['PGUSER'] ?? getenv('PGUSER') ?: 'neondb_owner';
-            $this->password = $_SERVER['PGPASSWORD'] ?? getenv('PGPASSWORD') ?: 'npg_OwYltEd9j3kL';
+            // Fallback to individual environment variables
+            $this->host = $_SERVER['PGHOST'] ?? getenv('PGHOST');
+            $this->db_name = $_SERVER['PGDATABASE'] ?? getenv('PGDATABASE');
+            $this->username = $_SERVER['PGUSER'] ?? getenv('PGUSER');
+            $this->password = $_SERVER['PGPASSWORD'] ?? getenv('PGPASSWORD');
             $this->port = $_SERVER['PGPORT'] ?? getenv('PGPORT') ?: '5432';
         }
     }
