@@ -112,13 +112,16 @@ h6 {
 }
 
 .category-dropdown .dropdown-menu {
-    background: var(--white);
-    border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    box-shadow: var(--shadow);
-    min-width: 200px;
-    margin-top: 0.5rem;
-    z-index: 1050;
+    background: var(--white) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 0.5rem !important;
+    box-shadow: var(--shadow) !important;
+    min-width: 200px !important;
+    margin-top: 0.5rem !important;
+    z-index: 1050 !important;
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
 }
 
 .category-dropdown .dropdown-item {
@@ -1077,12 +1080,14 @@ img {
 
 /* Navigation scrollbar fix */
 .categories-nav {
-    overflow: hidden;
+    overflow: visible;
+    position: relative;
+    z-index: 100;
 }
 
 .categories-scroll-container {
     overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: visible;
     scrollbar-width: none;
     /* Firefox */
     -ms-overflow-style: none;
