@@ -30,7 +30,9 @@ class Database {
     public function getConnection() {
         $this->conn = null;
         try {
-            $dsn = "pgsql:host=" . $this->host . ";port=" . $this->port . ";dbname=" . $this->db_name . ";sslmode=require";
+            // Use sslmode=disable for local development, sslmode=require for production
+            $sslmode = (strpos($this->host, 'localhost') !== false || strpos($this->host, '127.0.0.1') !== false || $this->host === 'helium') ? 'disable' : 'require';
+            $dsn = "pgsql:host=" . $this->host . ";port=" . $this->port . ";dbname=" . $this->db_name . ";sslmode=" . $sslmode;
             $this->conn = new PDO($dsn, $this->username, $this->password);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch(PDOException $exception) {
