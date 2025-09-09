@@ -107,7 +107,8 @@ h6 {
 /* Category Navigation Dropdown Styles */
 .category-dropdown {
     position: relative;
-    display: inline-block;
+    display: flex;
+    align-items: center;
 }
 
 .category-dropdown .dropdown-menu {
@@ -138,11 +139,13 @@ h6 {
     background: none;
     border: none;
     font-family: inherit;
-    font-size: inherit;
-    color: inherit;
+    font-size: 0.95rem;
+    color: var(--text-dark);
     padding: 1rem 1.5rem;
     text-decoration: none;
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
     white-space: nowrap;
     font-weight: 600;
     text-transform: uppercase;
