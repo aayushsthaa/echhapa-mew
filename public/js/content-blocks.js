@@ -51,28 +51,69 @@ class ContentBlocksEditor {
         
         block.innerHTML = `
             <div class="block-header">
-                <span class="block-type">Text Block</span>
+                <span class="block-type"><i class="fas fa-font text-primary"></i> Content Block</span>
                 <div class="block-controls">
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="contentEditor.moveBlockUp('${blockId}')">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="contentEditor.moveBlockUp('${blockId}')" title="Move Up">
                         <i class="fas fa-arrow-up"></i>
                     </button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="contentEditor.moveBlockDown('${blockId}')">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="contentEditor.moveBlockDown('${blockId}')" title="Move Down">
                         <i class="fas fa-arrow-down"></i>
                     </button>
-                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="contentEditor.removeBlock('${blockId}')">
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="contentEditor.removeBlock('${blockId}')" title="Remove Block">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
             </div>
             <div class="block-content">
-                <textarea class="form-control" rows="8" placeholder="Enter your content here..." 
-                          name="blocks[${blockId}][content]">${content}</textarea>
+                <div id="editor_${blockId}" class="rich-text-editor" data-editor data-height="300px"></div>
+                <textarea name="blocks[${blockId}][content]" style="display:none;" id="content_${blockId}">${content}</textarea>
                 <input type="hidden" name="blocks[${blockId}][type]" value="text">
             </div>
         `;
         
         this.blocksContainer.appendChild(block);
         this.blocks.push(blockId);
+        
+        // Initialize the professional editor
+        setTimeout(() => {
+            try {
+                const editor = new ProfessionalEditor(`editor_${blockId}`, {
+                    height: '300px',
+                    placeholder: 'Start writing your content...'
+                });
+                
+                // Store editor reference
+                block.editorInstance = editor;
+                
+                // Set initial content if provided
+                if (content) {
+                    setTimeout(() => {
+                        editor.setContent(content);
+                    }, 200);
+                }
+                
+                // Sync content with hidden textarea on change
+                if (editor.editorArea) {
+                    editor.editorArea.addEventListener('input', () => {
+                        document.getElementById(`content_${blockId}`).value = editor.getContent();
+                    });
+                    
+                    editor.editorArea.addEventListener('blur', () => {
+                        document.getElementById(`content_${blockId}`).value = editor.getContent();
+                    });
+                }
+            } catch (error) {
+                console.error('Error initializing rich text editor:', error);
+                // Fallback to textarea
+                const editorDiv = document.getElementById(`editor_${blockId}`);
+                editorDiv.innerHTML = `
+                    <textarea class="form-control" rows="8" placeholder="Start writing your content..." 
+                              onchange="document.getElementById('content_${blockId}').value = this.value"
+                              oninput="document.getElementById('content_${blockId}').value = this.value">${content}</textarea>
+                `;
+            }
+        }, 100);
+        
         return blockId;
     }
     
@@ -85,7 +126,7 @@ class ContentBlocksEditor {
         
         block.innerHTML = `
             <div class="block-header">
-                <span class="block-type">Image Block</span>
+                <span class="block-type"><i class="fas fa-image text-success"></i> Image Block</span>
                 <div class="block-controls">
                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="contentEditor.moveBlockUp('${blockId}')">
                         <i class="fas fa-arrow-up"></i>
@@ -146,9 +187,31 @@ class ContentBlocksEditor {
                 
                 <input type="hidden" name="blocks[${blockId}][type]" value="image">
                 <input type="hidden" name="blocks[${blockId}][url]" value="${imageUrl}" id="url_${blockId}">
-                <div class="mt-2">
-                    <input type="text" class="form-control" placeholder="Image caption (optional)" 
-                           name="blocks[${blockId}][caption]" value="${caption}">
+                <div class="mt-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" placeholder="Image caption (optional)" 
+                                   name="blocks[${blockId}][caption]" value="${caption}">
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" placeholder="Alt text for accessibility" 
+                                   name="blocks[${blockId}][alt]" value="">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            <input type="url" class="form-control" placeholder="Link URL (optional)" 
+                                   name="blocks[${blockId}][link]" value="">
+                        </div>
+                        <div class="col-md-6">
+                            <select class="form-select" name="blocks[${blockId}][alignment]">
+                                <option value="center">Center Aligned</option>
+                                <option value="left">Left Aligned</option>
+                                <option value="right">Right Aligned</option>
+                                <option value="full">Full Width</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -214,7 +277,7 @@ class ContentBlocksEditor {
         
         block.innerHTML = `
             <div class="block-header">
-                <span class="block-type">Video Block</span>
+                <span class="block-type"><i class="fas fa-video text-info"></i> Video Block</span>
                 <div class="block-controls">
                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="contentEditor.moveBlockUp('${blockId}')">
                         <i class="fas fa-arrow-up"></i>
@@ -228,24 +291,104 @@ class ContentBlocksEditor {
                 </div>
             </div>
             <div class="block-content">
-                <div class="mb-2">
-                    <input type="text" class="form-control" placeholder="Video URL (YouTube, Vimeo, etc.)" 
-                           name="blocks[${blockId}][url]" value="${videoUrl}" 
-                           onchange="contentEditor.updateVideoPreview('${blockId}', this.value)">
+                <div class="video-input-options mb-3">
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="videoSource_${blockId}" id="youtube_${blockId}" value="youtube" checked>
+                        <label class="btn btn-outline-danger" for="youtube_${blockId}">
+                            <i class="fab fa-youtube"></i> YouTube
+                        </label>
+                        
+                        <input type="radio" class="btn-check" name="videoSource_${blockId}" id="vimeo_${blockId}" value="vimeo">
+                        <label class="btn btn-outline-info" for="vimeo_${blockId}">
+                            <i class="fab fa-vimeo"></i> Vimeo
+                        </label>
+                        
+                        <input type="radio" class="btn-check" name="videoSource_${blockId}" id="embed_${blockId}" value="embed">
+                        <label class="btn btn-outline-secondary" for="embed_${blockId}">
+                            <i class="fas fa-code"></i> Embed Code
+                        </label>
+                    </div>
                 </div>
-                <div class="video-preview" id="preview_${blockId}">
+                
+                <div class="url-input-section" id="urlSection_${blockId}">
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" id="videoUrlInput_${blockId}" 
+                               placeholder="Paste YouTube or Vimeo URL here..." 
+                               value="${videoUrl}" 
+                               onchange="contentEditor.updateVideoPreview('${blockId}', this.value)">
+                        <button type="button" class="btn btn-primary" onclick="contentEditor.loadVideoFromUrl('${blockId}')">
+                            <i class="fas fa-play"></i> Load
+                        </button>
+                    </div>
+                    <small class="text-muted">Examples: https://www.youtube.com/watch?v=... or https://vimeo.com/...</small>
+                </div>
+                
+                <div class="embed-input-section" id="embedSection_${blockId}" style="display: none;">
+                    <div class="mb-2">
+                        <label class="form-label">Custom Embed Code</label>
+                        <textarea class="form-control" id="embedCodeInput_${blockId}" rows="4" 
+                                  placeholder="Paste iframe or embed code here..."></textarea>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="contentEditor.loadVideoFromEmbed('${blockId}')">
+                        <i class="fas fa-code"></i> Load Embed
+                    </button>
+                </div>
+                
+                <div class="video-preview mt-3" id="preview_${blockId}">
                     ${videoUrl ? this.generateVideoEmbed(videoUrl) : '<p class="text-muted">Enter video URL to see preview</p>'}
                 </div>
+                
                 <input type="hidden" name="blocks[${blockId}][type]" value="video">
-                <div class="mt-2">
-                    <input type="text" class="form-control" placeholder="Video caption (optional)" 
-                           name="blocks[${blockId}][caption]" value="${caption}">
+                <input type="hidden" name="blocks[${blockId}][url]" value="${videoUrl}" id="videoUrl_${blockId}">
+                <input type="hidden" name="blocks[${blockId}][embed_code]" value="" id="embedCode_${blockId}">
+                
+                <div class="mt-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" placeholder="Video caption (optional)" 
+                                   name="blocks[${blockId}][caption]" value="${caption}">
+                        </div>
+                        <div class="col-md-6">
+                            <select class="form-select" name="blocks[${blockId}][alignment]">
+                                <option value="center">Center Aligned</option>
+                                <option value="left">Left Aligned</option>
+                                <option value="right">Right Aligned</option>
+                                <option value="full">Full Width</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
         
         this.blocksContainer.appendChild(block);
         this.blocks.push(blockId);
+        
+        // Setup video source switching
+        const videoSourceRadios = block.querySelectorAll(`input[name="videoSource_${blockId}"]`);
+        const urlSection = block.querySelector(`#urlSection_${blockId}`);
+        const embedSection = block.querySelector(`#embedSection_${blockId}`);
+        const urlInput = block.querySelector(`#videoUrlInput_${blockId}`);
+        
+        videoSourceRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.value === 'embed') {
+                    urlSection.style.display = 'none';
+                    embedSection.style.display = 'block';
+                } else {
+                    urlSection.style.display = 'block';
+                    embedSection.style.display = 'none';
+                    
+                    // Update placeholder based on selection
+                    if (radio.value === 'youtube') {
+                        urlInput.placeholder = 'Paste YouTube URL here...';
+                    } else if (radio.value === 'vimeo') {
+                        urlInput.placeholder = 'Paste Vimeo URL here...';
+                    }
+                }
+            });
+        });
+        
         return blockId;
     }
     
@@ -393,11 +536,43 @@ class ContentBlocksEditor {
     
     updateVideoPreview(blockId, url) {
         const preview = document.getElementById(`preview_${blockId}`);
+        const hiddenUrlInput = document.getElementById(`videoUrl_${blockId}`);
+        
         if (url) {
             preview.innerHTML = this.generateVideoEmbed(url);
+            hiddenUrlInput.value = url;
         } else {
             preview.innerHTML = '<p class="text-muted">Enter video URL to see preview</p>';
+            hiddenUrlInput.value = '';
         }
+    }
+    
+    loadVideoFromUrl(blockId) {
+        const urlInput = document.getElementById(`videoUrlInput_${blockId}`);
+        const url = urlInput.value.trim();
+        
+        if (!url) {
+            alert('Please enter a video URL.');
+            return;
+        }
+        
+        this.updateVideoPreview(blockId, url);
+    }
+    
+    loadVideoFromEmbed(blockId) {
+        const embedInput = document.getElementById(`embedCodeInput_${blockId}`);
+        const embedCode = embedInput.value.trim();
+        
+        if (!embedCode) {
+            alert('Please enter embed code.');
+            return;
+        }
+        
+        const preview = document.getElementById(`preview_${blockId}`);
+        const hiddenEmbedInput = document.getElementById(`embedCode_${blockId}`);
+        
+        preview.innerHTML = embedCode;
+        hiddenEmbedInput.value = embedCode;
     }
     
     generateVideoEmbed(url) {
@@ -462,15 +637,33 @@ class ContentBlocksEditor {
             
             switch (blockType) {
                 case 'text':
-                    blockData.content = block.querySelector('textarea').value;
+                    // Get content from rich text editor or fallback textarea
+                    if (block.editorInstance && block.editorInstance.getContent) {
+                        blockData.content = block.editorInstance.getContent();
+                    } else {
+                        // Try hidden textarea
+                        const hiddenTextarea = block.querySelector(`#content_${blockId}`);
+                        if (hiddenTextarea) {
+                            blockData.content = hiddenTextarea.value;
+                        } else {
+                            // Fallback to visible textarea
+                            const textarea = block.querySelector('textarea');
+                            blockData.content = textarea ? textarea.value : '';
+                        }
+                    }
                     break;
                 case 'image':
                     blockData.url = block.querySelector('input[name*="[url]"]').value;
                     blockData.caption = block.querySelector('input[name*="[caption]"]').value;
+                    blockData.alt = block.querySelector('input[name*="[alt]"]')?.value || '';
+                    blockData.link = block.querySelector('input[name*="[link]"]')?.value || '';
+                    blockData.alignment = block.querySelector('select[name*="[alignment]"]')?.value || 'center';
                     break;
                 case 'video':
                     blockData.url = block.querySelector('input[name*="[url]"]').value;
+                    blockData.embed_code = block.querySelector('input[name*="[embed_code]"]')?.value || '';
                     blockData.caption = block.querySelector('input[name*="[caption]"]').value;
+                    blockData.alignment = block.querySelector('select[name*="[alignment]"]')?.value || 'center';
                     break;
                 case 'quote':
                     blockData.content = block.querySelector('textarea').value;
@@ -482,6 +675,22 @@ class ContentBlocksEditor {
         });
         
         return blocks;
+    }
+    
+    // Method to get final content for form submission
+    getFinalContent() {
+        // Update all rich text editor hidden textareas before getting content
+        this.blocksContainer.querySelectorAll('.content-block.text-block').forEach(block => {
+            const blockId = block.dataset.blockId;
+            if (block.editorInstance && block.editorInstance.getContent) {
+                const hiddenTextarea = document.getElementById(`content_${blockId}`);
+                if (hiddenTextarea) {
+                    hiddenTextarea.value = block.editorInstance.getContent();
+                }
+            }
+        });
+        
+        return JSON.stringify(this.getContent());
     }
 }
 

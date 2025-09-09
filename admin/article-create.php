@@ -309,6 +309,7 @@ if ($_POST) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../public/js/admin.js"></script>
     <script src="../public/js/editor.js"></script>
+    <script src="../public/js/content-blocks.js"></script>
     <script>
         // Featured Image Upload Handler
         document.addEventListener('DOMContentLoaded', function() {
@@ -392,10 +393,9 @@ if ($_POST) {
             const form = document.querySelector('form[data-validate]');
             if (form) {
                 form.onsubmit = function(e) {
-                    // Get content from the ProfessionalEditor
-                    const editorElement = document.querySelector('#content-blocks-editor .editor-content');
-                    if (editorElement) {
-                        const content = editorElement.innerHTML;
+                    // Get content from the content blocks system
+                    if (contentEditor && contentEditor.getFinalContent) {
+                        const content = contentEditor.getFinalContent();
                         document.getElementById('finalContent').value = content;
                     }
                     
@@ -409,8 +409,27 @@ if ($_POST) {
                         return false;
                     }
                     
-                    if (!finalContent || finalContent === '<p><br></p>' || finalContent === '' || finalContent.replace(/<[^>]*>/g, '').trim() === '') {
+                    if (!finalContent || finalContent === '[]' || finalContent === '') {
                         alert('Please add some content to your article.');
+                        e.preventDefault();
+                        return false;
+                    }
+                    
+                    // Check if content blocks have actual content
+                    try {
+                        const contentData = JSON.parse(finalContent);
+                        if (!contentData.length || contentData.every(block => {
+                            if (block.type === 'text') {
+                                return !block.content || block.content.replace(/<[^>]*>/g, '').trim() === '';
+                            }
+                            return !block.content && !block.url;
+                        })) {
+                            alert('Please add some content to your article.');
+                            e.preventDefault();
+                            return false;
+                        }
+                    } catch (e) {
+                        alert('Content format error. Please try refreshing the page.');
                         e.preventDefault();
                         return false;
                     }
