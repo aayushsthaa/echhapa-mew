@@ -170,9 +170,11 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                         <article class="magazine-card">
                             <?php if ($article['featured_image']): ?>
                             <div class="magazine-image">
-                                <img src="<?php echo htmlspecialchars($article['featured_image']); ?>" 
-                                     alt="<?php echo htmlspecialchars($article['title']); ?>" 
-                                     class="img-fluid">
+                                <a href="article.php?slug=<?php echo $article['slug']; ?>" class="image-link">
+                                    <img src="<?php echo htmlspecialchars($article['featured_image']); ?>" 
+                                         alt="<?php echo htmlspecialchars($article['title']); ?>" 
+                                         class="img-fluid">
+                                </a>
                             </div>
                             <?php endif; ?>
                             <div class="magazine-content p-3">
@@ -280,9 +282,11 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <article class="news-card h-100">
                                         <?php if ($category['show_images'] && $cat_article['featured_image']): ?>
                                         <div class="news-image">
-                                            <img src="<?php echo htmlspecialchars($cat_article['featured_image']); ?>" 
-                                                 alt="<?php echo htmlspecialchars($cat_article['title']); ?>" 
-                                                 class="img-fluid">
+                                            <a href="article.php?slug=<?php echo $cat_article['slug']; ?>" class="image-link">
+                                                <img src="<?php echo htmlspecialchars($cat_article['featured_image']); ?>" 
+                                                     alt="<?php echo htmlspecialchars($cat_article['title']); ?>" 
+                                                     class="img-fluid">
+                                            </a>
                                         </div>
                                         <?php endif; ?>
                                         <div class="news-content p-3">
@@ -372,9 +376,11 @@ $homepage_categories = $homepage_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <?php if ($category['show_images'] && $cat_article['featured_image']): ?>
                                                 <div class="col-4">
                                                     <div class="modern-card-image">
-                                                        <img src="<?php echo htmlspecialchars($cat_article['featured_image']); ?>" 
-                                                             alt="<?php echo htmlspecialchars($cat_article['title']); ?>" 
-                                                             class="img-fluid h-100">
+                                                        <a href="article.php?slug=<?php echo $cat_article['slug']; ?>" class="image-link">
+                                                            <img src="<?php echo htmlspecialchars($cat_article['featured_image']); ?>" 
+                                                                 alt="<?php echo htmlspecialchars($cat_article['title']); ?>" 
+                                                                 class="img-fluid h-100">
+                                                        </a>
                                                     </div>
                                                 </div>
                                                 <div class="col-8">
