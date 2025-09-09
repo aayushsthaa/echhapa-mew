@@ -38,7 +38,7 @@ function displayAd($ad, $track_impression = true) {
     } elseif ($ad['type'] === 'text') {
         $html .= '<div class="ad-text">';
         $html .= '<h6>' . htmlspecialchars($ad['title']) . '</h6>';
-        $html .= '<p>' . nl2br(htmlspecialchars($ad['content'])) . '</p>';
+        $html .= '<p>' . nl2br(htmlspecialchars($ad['description'])) . '</p>';
         if ($ad['click_url']) {
             $html .= '<a href="' . htmlspecialchars($ad['click_url']) . '" target="_blank" onclick="trackAdClick(' . $ad['id'] . ')" class="btn btn-primary btn-sm">Learn More</a>';
         }

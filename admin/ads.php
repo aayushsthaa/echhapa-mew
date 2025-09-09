@@ -434,13 +434,49 @@ $ads = $ads_stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         
         function previewAd(adData) {
-            alert('Ad Preview:\n\nTitle: ' + adData.title + '\nType: ' + adData.type + '\nPosition: ' + adData.position);
+            let previewHTML = '<div class="advertisement-wrapper"><div class="ad-label">Advertisement</div>';
+            
+            if (adData.ad_type === 'banner' && adData.image_url) {
+                previewHTML += `<img src="${adData.image_url}" alt="${adData.title}" class="img-fluid" style="max-width: 100%; height: auto;">`;
+            } else if (adData.ad_type === 'text') {
+                previewHTML += `<div class="ad-text"><h6>${adData.title}</h6><p>${adData.description || ''}</p></div>`;
+            } else {
+                previewHTML += `<div style="background: #f0f0f0; padding: 20px; text-align: center; border: 2px dashed #ccc;">${adData.title}</div>`;
+            }
+            
+            previewHTML += '</div>';
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal fade';
+            modal.innerHTML = `
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Ad Preview - ${adData.title}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Position:</strong> ${adData.position}</p>
+                            <p><strong>Type:</strong> ${adData.ad_type}</p>
+                            <div class="border p-3 bg-light">
+                                ${previewHTML}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            const bootstrapModal = new bootstrap.Modal(modal);
+            bootstrapModal.show();
+            
+            modal.addEventListener('hidden.bs.modal', () => {
+                document.body.removeChild(modal);
+            });
         }
         
         function editAd(adId) {
-            alert('Edit functionality will be implemented');
-        }
-        
+            window.location.href = 'ad-edit.php?id=' + adId;
         }
         
         // Auto-update preview on input change
