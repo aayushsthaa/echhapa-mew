@@ -389,14 +389,21 @@ if ($_POST) {
                 }
             }
             
-            // Form Submission Handler
+            // Form Submission Handler - Use addEventListener to run before HTML5 validation
             const form = document.querySelector('form[data-validate]');
             if (form) {
-                form.onsubmit = function(e) {
-                    // Get content from the content blocks system
+                // Populate content before any validation
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault(); // Stop the form initially
+                    
+                    // Get content from the content blocks system FIRST
                     if (contentEditor && contentEditor.getFinalContent) {
                         const content = contentEditor.getFinalContent();
                         document.getElementById('finalContent').value = content;
+                    } else {
+                        console.warn('Content editor not initialized');
+                        // Try to get content directly
+                        document.getElementById('finalContent').value = JSON.stringify([]);
                     }
                     
                     // Validate required fields
@@ -405,13 +412,11 @@ if ($_POST) {
                     
                     if (!title) {
                         alert('Please enter a title.');
-                        e.preventDefault();
                         return false;
                     }
                     
                     if (!finalContent || finalContent === '[]' || finalContent === '') {
                         alert('Please add some content to your article.');
-                        e.preventDefault();
                         return false;
                     }
                     
@@ -425,17 +430,18 @@ if ($_POST) {
                             return !block.content && !block.url;
                         })) {
                             alert('Please add some content to your article.');
-                            e.preventDefault();
                             return false;
                         }
-                    } catch (e) {
+                    } catch (err) {
+                        console.error('Content format error:', err);
                         alert('Content format error. Please try refreshing the page.');
-                        e.preventDefault();
                         return false;
                     }
                     
-                    return true;
-                };
+                    // If we get here, validation passed - submit the form
+                    form.removeEventListener('submit', arguments.callee); // Remove this listener
+                    form.submit(); // Actually submit the form
+                });
             }
         });
         

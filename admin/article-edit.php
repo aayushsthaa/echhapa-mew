@@ -235,7 +235,7 @@ if ($_POST) {
                                             <label class="form-label">Article Content *</label>
                                             <p class="text-muted mb-3">Use the content blocks below to create rich articles with text, images, videos, and quotes.</p>
                                             <div id="content-blocks-editor" data-editor data-height="400px"></div>
-                                            <textarea name="content" id="finalContent" style="display:none;" required><?php echo htmlspecialchars($article_data['content']); ?></textarea>
+                                            <textarea name="content" id="finalContent" style="display:none;"><?php echo htmlspecialchars($article_data['content']); ?></textarea>
                                         </div>
                                     </div>
                                 </div>
