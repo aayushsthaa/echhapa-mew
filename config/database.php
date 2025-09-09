@@ -56,11 +56,110 @@ class Database {
                 $this->createTables($conn);
                 $this->insertSampleData($conn);
             }
+            
+            // Convert existing articles to JSON format
+            $this->convertArticlesToJsonFormat($conn);
+            
             return true;
         } catch(PDOException $e) {
             echo "Database initialization error: " . $e->getMessage();
             return false;
         }
+    }
+
+    private function convertArticlesToJsonFormat($conn) {
+        try {
+            // Get all articles that have HTML content (not JSON)
+            $stmt = $conn->query("SELECT id, content FROM articles WHERE content NOT LIKE '[{%'");
+            $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            foreach ($articles as $article) {
+                $htmlContent = $article['content'];
+                
+                // Convert HTML content to JSON blocks format
+                $jsonBlocks = $this->convertHtmlToJsonBlocks($htmlContent);
+                
+                // Update the article with JSON content
+                $updateStmt = $conn->prepare("UPDATE articles SET content = ? WHERE id = ?");
+                $updateStmt->execute([json_encode($jsonBlocks), $article['id']]);
+            }
+            
+        } catch(PDOException $e) {
+            // Silently handle conversion errors - not critical
+            error_log("Article conversion error: " . $e->getMessage());
+        }
+    }
+
+    private function convertHtmlToJsonBlocks($htmlContent) {
+        $blocks = [];
+        $blockId = 1;
+        
+        // Clean the HTML content
+        $htmlContent = trim($htmlContent);
+        
+        if (empty($htmlContent)) {
+            return [['type' => 'text', 'id' => 'block_1', 'content' => '<p>No content available.</p>']];
+        }
+        
+        // Split by paragraphs and images
+        $dom = new DOMDocument();
+        libxml_use_internal_errors(true);
+        $dom->loadHTML('<?xml encoding="UTF-8">' . $htmlContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        libxml_clear_errors();
+        
+        $xpath = new DOMXPath($dom);
+        $elements = $xpath->query('//p | //img | //blockquote | //h1 | //h2 | //h3 | //h4 | //h5 | //h6');
+        
+        if ($elements->length === 0) {
+            // Fallback: treat entire content as text block
+            $blocks[] = [
+                'type' => 'text',
+                'id' => 'block_' . $blockId++,
+                'content' => $htmlContent
+            ];
+        } else {
+            foreach ($elements as $element) {
+                if ($element->nodeName === 'img') {
+                    $blocks[] = [
+                        'type' => 'image',
+                        'id' => 'block_' . $blockId++,
+                        'url' => $element->getAttribute('src') ?: '',
+                        'alt' => $element->getAttribute('alt') ?: '',
+                        'caption' => '',
+                        'link' => '',
+                        'alignment' => 'center'
+                    ];
+                } else if ($element->nodeName === 'blockquote') {
+                    $blocks[] = [
+                        'type' => 'quote',
+                        'id' => 'block_' . $blockId++,
+                        'content' => trim($element->textContent),
+                        'author' => ''
+                    ];
+                } else {
+                    // Text elements (p, h1, h2, etc.)
+                    $textContent = $dom->saveHTML($element);
+                    if (!empty(trim($element->textContent))) {
+                        $blocks[] = [
+                            'type' => 'text',
+                            'id' => 'block_' . $blockId++,
+                            'content' => $textContent
+                        ];
+                    }
+                }
+            }
+        }
+        
+        // If no blocks were created, create a default text block
+        if (empty($blocks)) {
+            $blocks[] = [
+                'type' => 'text',
+                'id' => 'block_1',
+                'content' => '<p>' . htmlspecialchars($htmlContent) . '</p>'
+            ];
+        }
+        
+        return $blocks;
     }
 
     private function createTables($conn) {
