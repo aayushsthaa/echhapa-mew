@@ -13,9 +13,9 @@ if ($_POST) {
         switch ($_POST['action']) {
             case 'create':
                 $title = sanitize($_POST['title'] ?? '');
-                $type = sanitize($_POST['type'] ?? 'banner');
+                $type = sanitize($_POST['ad_type'] ?? 'banner');
                 $position = sanitize($_POST['position'] ?? 'sidebar');
-                $content = $_POST['content'] ?? '';
+                $content = $_POST['description'] ?? '';
                 $click_url = sanitize($_POST['click_url'] ?? '');
                 $image_url = sanitize($_POST['image_url'] ?? '');
                 $status = sanitize($_POST['status'] ?? 'active');
@@ -311,8 +311,8 @@ $ads = $ads_stmt->fetchAll(PDO::FETCH_ASSOC);
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="type" class="form-label">Ad Type *</label>
-                                    <select class="form-select" name="type" id="type" onchange="updateAdPreview()" required>
+                                    <label for="ad_type" class="form-label">Ad Type *</label>
+                                    <select class="form-select" name="ad_type" id="ad_type" onchange="updateAdPreview()" required>
                                         <option value="banner">Banner (728x90)</option>
                                         <option value="square">Square (300x300)</option>
                                         <option value="text">Text Only</option>
@@ -350,8 +350,8 @@ $ads = $ads_stmt->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                         
                         <div class="mb-3">
-                            <label for="content" class="form-label">Ad Content</label>
-                            <textarea class="form-control" name="content" id="content" rows="4" 
+                            <label for="description" class="form-label">Ad Content</label>
+                            <textarea class="form-control" name="description" id="description" rows="4" 
                                       placeholder="HTML content for your ad (for text/banner ads)"></textarea>
                         </div>
                         
@@ -409,9 +409,9 @@ $ads = $ads_stmt->fetchAll(PDO::FETCH_ASSOC);
     <script>
         function updateAdPreview() {
             const title = document.getElementById('title').value;
-            const type = document.getElementById('type').value;
+            const type = document.getElementById('ad_type').value;
             const imageUrl = document.getElementById('image_url').value;
-            const content = document.getElementById('content').value;
+            const content = document.getElementById('description').value;
             const previewContent = document.getElementById('previewContent');
             
             let previewHTML = '';
@@ -445,7 +445,7 @@ $ads = $ads_stmt->fetchAll(PDO::FETCH_ASSOC);
         
         // Auto-update preview on input change
         document.addEventListener('DOMContentLoaded', function() {
-            const inputs = ['title', 'type', 'image_url', 'content'];
+            const inputs = ['title', 'ad_type', 'image_url', 'description'];
             inputs.forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
