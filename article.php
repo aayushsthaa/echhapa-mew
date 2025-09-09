@@ -2,6 +2,88 @@
 require_once 'config/config.php';
 require_once 'classes/Article.php';
 
+// Content rendering function for JSON content blocks
+function renderContent($content) {
+    // If content is already HTML (old format), return as is
+    if (!isJsonString($content)) {
+        return $content;
+    }
+    
+    $blocks = json_decode($content, true);
+    if (!$blocks || !is_array($blocks)) {
+        return '<p>No content available.</p>';
+    }
+    
+    $html = '';
+    foreach ($blocks as $block) {
+        switch ($block['type']) {
+            case 'text':
+                $html .= '<div class="content-block text-block">';
+                $html .= $block['content'] ?? '';
+                $html .= '</div>';
+                break;
+                
+            case 'image':
+                $html .= '<div class="content-block image-block" style="text-align: ' . ($block['alignment'] ?? 'center') . '; margin: 2rem 0;">';
+                if (!empty($block['link'])) {
+                    $html .= '<a href="' . htmlspecialchars($block['link']) . '" target="_blank">';
+                }
+                $html .= '<img src="' . htmlspecialchars($block['url']) . '" ';
+                $html .= 'alt="' . htmlspecialchars($block['alt'] ?? '') . '" ';
+                $html .= 'class="img-fluid" style="max-width: 100%; height: auto; border-radius: 8px;">';
+                if (!empty($block['link'])) {
+                    $html .= '</a>';
+                }
+                if (!empty($block['caption'])) {
+                    $html .= '<p class="image-caption text-muted mt-2" style="font-style: italic; font-size: 0.9rem;">';
+                    $html .= htmlspecialchars($block['caption']);
+                    $html .= '</p>';
+                }
+                $html .= '</div>';
+                break;
+                
+            case 'video':
+                $html .= '<div class="content-block video-block" style="text-align: ' . ($block['alignment'] ?? 'center') . '; margin: 2rem 0;">';
+                if (!empty($block['embed_code'])) {
+                    $html .= $block['embed_code'];
+                } else if (!empty($block['url'])) {
+                    // Handle YouTube, Vimeo, etc.
+                    $html .= '<div class="video-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">';
+                    $html .= '<iframe src="' . htmlspecialchars($block['url']) . '" ';
+                    $html .= 'style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" ';
+                    $html .= 'frameborder="0" allowfullscreen></iframe>';
+                    $html .= '</div>';
+                }
+                if (!empty($block['caption'])) {
+                    $html .= '<p class="video-caption text-muted mt-2" style="font-style: italic; font-size: 0.9rem;">';
+                    $html .= htmlspecialchars($block['caption']);
+                    $html .= '</p>';
+                }
+                $html .= '</div>';
+                break;
+                
+            case 'quote':
+                $html .= '<blockquote class="content-block quote-block" style="border-left: 4px solid var(--primary-color); padding-left: 1.5rem; margin: 2rem 0; font-style: italic; font-size: 1.2rem; color: #555;">';
+                $html .= '<p>' . nl2br(htmlspecialchars($block['content'] ?? '')) . '</p>';
+                if (!empty($block['author'])) {
+                    $html .= '<footer class="blockquote-footer mt-2">';
+                    $html .= '<cite>' . htmlspecialchars($block['author']) . '</cite>';
+                    $html .= '</footer>';
+                }
+                $html .= '</blockquote>';
+                break;
+        }
+    }
+    
+    return $html;
+}
+
+function isJsonString($string) {
+    if (!is_string($string)) return false;
+    json_decode($string);
+    return json_last_error() === JSON_ERROR_NONE;
+}
+
 $slug = sanitize($_GET['slug'] ?? '');
 
 if (empty($slug)) {
@@ -196,7 +278,7 @@ if ($article_data['category_id']) {
                         <?php endif; ?>
                         
                         <div class="article-content">
-                            <?php echo $article_data['content']; ?>
+                            <?php echo renderContent($article_data['content']); ?>
                         </div>
                         
                         <!-- Social Sharing -->
