@@ -10,26 +10,36 @@ if (!isset($conn)) {
     $conn = $db->getConnection();
 }
 
-// Get categories for navigation
-$categories_stmt = $conn->query("SELECT * FROM categories WHERE status = 'active' AND show_in_menu = true ORDER BY display_order");
-$categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
+// Get only parent categories for main navigation (level 0, no parent_id)
+$parent_categories_stmt = $conn->query("
+    SELECT * FROM categories 
+    WHERE status = 'active' 
+    AND show_in_menu = true 
+    AND parent_id IS NULL 
+    ORDER BY display_order
+");
+$parent_categories = $parent_categories_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Get categories with subcategories for dropdown navigation
+// Build navigation structure with subcategories
 $nav_categories = [];
-foreach ($categories as $category) {
-    if (!isset($nav_categories[$category['id']])) {
-        $nav_categories[$category['id']] = $category;
-        $nav_categories[$category['id']]['subcategories'] = [];
-    }
-}
-
-// Get subcategories
-$subcategories_stmt = $conn->query("SELECT * FROM categories WHERE parent_id IS NOT NULL AND show_in_menu = true ORDER BY parent_id, display_order");
-$subcategories = $subcategories_stmt->fetchAll(PDO::FETCH_ASSOC);
-
-foreach ($subcategories as $subcat) {
-    if (isset($nav_categories[$subcat['parent_id']])) {
-        $nav_categories[$subcat['parent_id']]['subcategories'][] = $subcat;
+foreach ($parent_categories as $parent) {
+    $nav_categories[$parent['id']] = $parent;
+    $nav_categories[$parent['id']]['subcategories'] = [];
+    
+    // Get subcategories for this parent
+    $subcategories_stmt = $conn->prepare("
+        SELECT * FROM categories 
+        WHERE parent_id = ? 
+        AND status = 'active' 
+        AND show_in_menu = true 
+        ORDER BY display_order
+    ");
+    $subcategories_stmt->execute([$parent['id']]);
+    $subcategories = $subcategories_stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Add subcategories to parent
+    foreach ($subcategories as $subcat) {
+        $nav_categories[$parent['id']]['subcategories'][] = $subcat;
     }
 }
 
