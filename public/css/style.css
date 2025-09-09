@@ -72,6 +72,32 @@ h6 {
     text-decoration: none;
 }
 
+/* Clickable Image Links */
+.image-link {
+    display: block;
+    text-decoration: none;
+    transition: var(--transition);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.image-link:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-hover);
+}
+
+.image-link img {
+    transition: var(--transition);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-link:hover img {
+    opacity: 0.9;
+    filter: brightness(1.1);
+}
+
 /* Category Badge Styling */
 .category-badge {
     font-size: 0.9rem !important;

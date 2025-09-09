@@ -172,9 +172,11 @@ $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <?php if ($article_item['featured_image']): ?>
                                     <div class="col-md-4">
                                         <div class="article-image">
-                                            <img src="<?php echo htmlspecialchars($article_item['featured_image']); ?>" 
-                                                 alt="<?php echo htmlspecialchars($article_item['title']); ?>"
-                                                 class="img-fluid rounded">
+                                            <a href="article.php?slug=<?php echo $article_item['slug']; ?>" class="image-link">
+                                                <img src="<?php echo htmlspecialchars($article_item['featured_image']); ?>" 
+                                                     alt="<?php echo htmlspecialchars($article_item['title']); ?>"
+                                                     class="img-fluid rounded">
+                                            </a>
                                         </div>
                                     </div>
                                     <?php endif; ?>

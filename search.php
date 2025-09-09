@@ -139,8 +139,10 @@ $categories = $categories_stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <article class="news-item">
                                     <?php if ($article_item['featured_image']): ?>
                                     <div class="article-image">
-                                        <img src="<?php echo htmlspecialchars($article_item['featured_image']); ?>" 
-                                             alt="<?php echo htmlspecialchars($article_item['title']); ?>">
+                                        <a href="article.php?slug=<?php echo $article_item['slug']; ?>" class="image-link">
+                                            <img src="<?php echo htmlspecialchars($article_item['featured_image']); ?>" 
+                                                 alt="<?php echo htmlspecialchars($article_item['title']); ?>">
+                                        </a>
                                     </div>
                                     <?php endif; ?>
                                     <div class="article-content">
