@@ -1,17 +1,44 @@
 // Main Frontend JavaScript
 document.addEventListener('DOMContentLoaded', function() {
+    let bootstrapDropdownsActive = false;
+    
     // Wait for Bootstrap to load, then initialize dropdowns
     function initializeDropdowns() {
         if (typeof bootstrap !== 'undefined') {
-            // Initialize Bootstrap dropdowns manually to ensure they work
-            var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
-            var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
-                return new bootstrap.Dropdown(dropdownToggleEl);
-            });
-            console.log('Dropdowns initialized:', dropdownList.length);
+            try {
+                // Initialize Bootstrap dropdowns manually to ensure they work
+                var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+                var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+                    return new bootstrap.Dropdown(dropdownToggleEl);
+                });
+                console.log('Bootstrap dropdowns initialized:', dropdownList.length);
+                bootstrapDropdownsActive = true;
+                
+                // Test if Bootstrap dropdowns are working after a short delay
+                setTimeout(testBootstrapDropdowns, 300);
+            } catch (error) {
+                console.warn('Bootstrap dropdown initialization failed:', error);
+                addFallbackDropdowns();
+            }
         } else {
             // If Bootstrap isn't loaded yet, wait a bit and try again
             setTimeout(initializeDropdowns, 100);
+        }
+    }
+    
+    // Test if Bootstrap dropdowns are actually working
+    function testBootstrapDropdowns() {
+        const testDropdown = document.querySelector('.dropdown-toggle');
+        if (testDropdown) {
+            // Check if Bootstrap instance exists
+            const bsDropdown = bootstrap.Dropdown.getInstance(testDropdown);
+            if (!bsDropdown) {
+                console.warn('Bootstrap dropdowns not working properly, falling back to manual implementation');
+                bootstrapDropdownsActive = false;
+                addFallbackDropdowns();
+            } else {
+                console.log('Bootstrap dropdowns are working correctly');
+            }
         }
     }
     
@@ -20,12 +47,20 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Fallback dropdown functionality for cases where Bootstrap fails
     function addFallbackDropdowns() {
+        if (bootstrapDropdownsActive) {
+            console.log('Bootstrap dropdowns active, skipping fallback');
+            return;
+        }
+        
         const dropdowns = document.querySelectorAll('.dropdown');
         dropdowns.forEach(dropdown => {
             const toggle = dropdown.querySelector('.dropdown-toggle');
             const menu = dropdown.querySelector('.dropdown-menu');
             
             if (toggle && menu) {
+                // Remove any existing Bootstrap data attributes to avoid conflicts
+                toggle.removeAttribute('data-bs-toggle');
+                
                 // Add click event listener as fallback
                 toggle.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -52,9 +87,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         console.log('Fallback dropdowns added:', dropdowns.length);
     }
-    
-    // Add fallback dropdown functionality
-    setTimeout(addFallbackDropdowns, 200);
     // Smooth scrolling for anchor links
     const anchorLinks = document.querySelectorAll('a[href^="#"]');
     anchorLinks.forEach(link => {

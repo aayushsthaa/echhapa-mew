@@ -122,7 +122,6 @@ h6 {
     position: absolute !important;
     top: 100% !important;
     left: 0 !important;
-    display: none;
 }
 
 .category-dropdown .dropdown-item {
