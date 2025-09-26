@@ -11,12 +11,16 @@ run = ["php", "-S", "0.0.0.0:5000"]
 deploymentTarget = "autoscale"
 
 [[ports]]
+localPort = 5000
+externalPort = 80
+
+[[ports]]
 localPort = 8000
 externalPort = 80
 
 [[ports]]
-localPort = 5000
-externalPort = 80
+localPort = 40301
+externalPort = 3000
 
 [agent]
 expertMode = true
@@ -42,5 +46,5 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "php -S 0.0.0.0:5000"
+args = "php -S 0.0.0.0:5000 -t ."
 waitForPort = 5000
