@@ -122,6 +122,7 @@ h6 {
     position: absolute !important;
     top: 100% !important;
     left: 0 !important;
+    display: none;
 }
 
 .category-dropdown .dropdown-item {
@@ -135,6 +136,11 @@ h6 {
 .category-dropdown .dropdown-item:hover {
     background: var(--gray-100);
     color: var(--primary-red);
+}
+
+/* Ensure dropdown menu shows when .show class is applied */
+.category-dropdown .dropdown-menu.show {
+    display: block !important;
 }
 
 .category-link.dropdown-toggle {

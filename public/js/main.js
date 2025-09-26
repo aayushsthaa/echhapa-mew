@@ -1,10 +1,60 @@
 // Main Frontend JavaScript
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Bootstrap dropdowns
-    var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
-    var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
-        return new bootstrap.Dropdown(dropdownToggleEl);
-    });
+    // Wait for Bootstrap to load, then initialize dropdowns
+    function initializeDropdowns() {
+        if (typeof bootstrap !== 'undefined') {
+            // Initialize Bootstrap dropdowns manually to ensure they work
+            var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+            var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+                return new bootstrap.Dropdown(dropdownToggleEl);
+            });
+            console.log('Dropdowns initialized:', dropdownList.length);
+        } else {
+            // If Bootstrap isn't loaded yet, wait a bit and try again
+            setTimeout(initializeDropdowns, 100);
+        }
+    }
+    
+    // Initialize dropdowns
+    initializeDropdowns();
+    
+    // Fallback dropdown functionality for cases where Bootstrap fails
+    function addFallbackDropdowns() {
+        const dropdowns = document.querySelectorAll('.dropdown');
+        dropdowns.forEach(dropdown => {
+            const toggle = dropdown.querySelector('.dropdown-toggle');
+            const menu = dropdown.querySelector('.dropdown-menu');
+            
+            if (toggle && menu) {
+                // Add click event listener as fallback
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Close all other dropdowns first
+                    document.querySelectorAll('.dropdown-menu.show').forEach(otherMenu => {
+                        if (otherMenu !== menu) {
+                            otherMenu.classList.remove('show');
+                        }
+                    });
+                    
+                    // Toggle current dropdown
+                    menu.classList.toggle('show');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!dropdown.contains(e.target)) {
+                        menu.classList.remove('show');
+                    }
+                });
+            }
+        });
+        console.log('Fallback dropdowns added:', dropdowns.length);
+    }
+    
+    // Add fallback dropdown functionality
+    setTimeout(addFallbackDropdowns, 200);
     // Smooth scrolling for anchor links
     const anchorLinks = document.querySelectorAll('a[href^="#"]');
     anchorLinks.forEach(link => {
