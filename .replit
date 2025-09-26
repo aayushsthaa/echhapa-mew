@@ -7,7 +7,7 @@ modules = ["php-8.2", "web", "nodejs-20", "nix", "postgresql-16"]
 channel = "stable-25_05"
 
 [deployment]
-run = ["php", "-S", "0.0.0.0:5000"]
+run = ["php", "-S", "0.0.0.0:5000", "-t", "."]
 deploymentTarget = "autoscale"
 
 [[ports]]
