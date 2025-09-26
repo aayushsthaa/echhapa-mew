@@ -240,10 +240,6 @@ class ProfessionalEditor {
         modal.innerHTML = `
             <div class="modal-content" style="background: white; padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
                 <h5 style="margin-bottom: 1rem;">Insert Image</h5>
-                <div class="tab-buttons" style="margin-bottom: 1rem; border-bottom: 1px solid #dee2e6;">
-                    <button type="button" class="tab-btn active" data-tab="upload" style="padding: 0.5rem 1rem; border: none; background: none; border-bottom: 2px solid #007bff; cursor: pointer;">Upload File</button>
-                    <button type="button" class="tab-btn" data-tab="url" style="padding: 0.5rem 1rem; border: none; background: none; border-bottom: 2px solid transparent; cursor: pointer; margin-left: 1rem;">From URL</button>
-                </div>
                 
                 <div class="tab-content">
                     <div class="tab-panel" id="upload-panel">
@@ -255,16 +251,6 @@ class ProfessionalEditor {
                         <input type="file" accept="image/*" style="display: none;">
                     </div>
                     
-                    <div class="tab-panel" id="url-panel" style="display: none;">
-                        <div style="margin-bottom: 1rem;">
-                            <label style="display: block; margin-bottom: 0.5rem;">Image URL:</label>
-                            <input type="url" class="form-control" placeholder="https://example.com/image.jpg" style="width: 100%; padding: 0.5rem; border: 1px solid #dee2e6; border-radius: 4px;">
-                        </div>
-                        <div style="margin-bottom: 1rem;">
-                            <label style="display: block; margin-bottom: 0.5rem;">Alt Text (optional):</label>
-                            <input type="text" class="form-control" placeholder="Describe the image" style="width: 100%; padding: 0.5rem; border: 1px solid #dee2e6; border-radius: 4px;">
-                        </div>
-                    </div>
                 </div>
                 
                 <div style="text-align: right; margin-top: 1.5rem;">
@@ -276,23 +262,7 @@ class ProfessionalEditor {
         
         document.body.appendChild(modal);
         
-        // Tab switching
-        const tabButtons = modal.querySelectorAll('.tab-btn');
-        const tabPanels = modal.querySelectorAll('.tab-panel');
-        
-        tabButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                tabButtons.forEach(b => {
-                    b.classList.remove('active');
-                    b.style.borderBottomColor = 'transparent';
-                });
-                btn.classList.add('active');
-                btn.style.borderBottomColor = '#007bff';
-                
-                tabPanels.forEach(panel => panel.style.display = 'none');
-                modal.querySelector(`#${btn.dataset.tab}-panel`).style.display = 'block';
-            });
-        });
+        // No tab switching needed since only upload panel remains
         
         // File upload handling
         const uploadArea = modal.querySelector('.upload-area');
@@ -329,28 +299,12 @@ class ProfessionalEditor {
             }
         });
         
-        // URL insertion handling
-        const urlInput = modal.querySelector('#url-panel input[type="url"]');
-        const altInput = modal.querySelector('#url-panel input[type="text"]');
+        // Button handling (simplified since only upload remains)
         const insertBtn = modal.querySelector('.btn-insert');
         const cancelBtn = modal.querySelector('.btn-cancel');
         
-        insertBtn.addEventListener('click', () => {
-            const activePanel = modal.querySelector('.tab-panel:not([style*="display: none"])');
-            
-            if (activePanel.id === 'url-panel') {
-                const url = urlInput.value.trim();
-                const alt = altInput.value.trim();
-                
-                if (url) {
-                    const img = `<img src="${url}" alt="${alt}" style="max-width: 100%; height: auto; margin: 10px 0;">`;
-                    document.execCommand('insertHTML', false, img);
-                    document.body.removeChild(modal);
-                } else {
-                    alert('Please enter an image URL');
-                }
-            }
-        });
+        // Hide Insert button since upload handles insertion automatically
+        insertBtn.style.display = 'none';
         
         cancelBtn.addEventListener('click', () => {
             document.body.removeChild(modal);

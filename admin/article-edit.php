@@ -1,6 +1,17 @@
 <?php
 require_once '../includes/auth_check.php';
 require_once '../classes/Article.php';
+require_once 'auto-image-assignment.php';
+
+// Function declarations for LSP (functions are defined in auto-image-assignment.php)
+if (!function_exists('autoAssignArticleImage')) {
+    /**
+     * Auto-assign image for article if none provided
+     * @param array $articleData
+     * @return string|null
+     */
+    function autoAssignArticleImage($articleData) { /* Implementation in auto-image-assignment.php */ }
+}
 
 $article_id = intval($_GET['id'] ?? 0);
 
@@ -51,6 +62,27 @@ if ($_POST) {
                 $new_slug .= '-' . time();
             }
             $slug = $new_slug;
+        }
+        
+        // Auto-assign image if none provided and none exists
+        if (empty($featured_image) && empty($article_data['featured_image'])) {
+            // Get category name for context
+            $category_name = '';
+            if ($category_id) {
+                $cat_stmt = $conn->prepare("SELECT name FROM categories WHERE id = ?");
+                $cat_stmt->execute([$category_id]);
+                $category_data = $cat_stmt->fetch(PDO::FETCH_ASSOC);
+                $category_name = $category_data['name'] ?? '';
+            }
+            
+            $featured_image = autoAssignArticleImage([
+                'title' => $title,
+                'category_name' => $category_name,
+                'featured_image' => ''
+            ]);
+        } elseif (empty($featured_image)) {
+            // Keep existing image if no new one provided
+            $featured_image = $article_data['featured_image'];
         }
         
         $update_data = [
@@ -279,12 +311,6 @@ if ($_POST) {
                                         <div class="mb-3">
                                             <label for="featured_image" class="form-label">Featured Image</label>
                                             
-                                            <!-- Image URL Input -->
-                                            <div class="mb-2">
-                                                <input type="url" class="form-control" name="featured_image" id="featuredImageUrl" 
-                                                       placeholder="Enter image URL or upload image below" 
-                                                       value="<?php echo htmlspecialchars($article_data['featured_image'] ?? ''); ?>">
-                                            </div>
                                             
                                             <!-- Image Upload Option -->
                                             <div class="featured-image-upload">
@@ -295,7 +321,7 @@ if ($_POST) {
                                                     <?php else: ?>
                                                         <div class="upload-placeholder">
                                                             <i class="fas fa-upload"></i>
-                                                            <p>Or click here to upload from your PC</p>
+                                                            <p>Click here to upload an image</p>
                                                             <p class="text-muted">JPG, PNG, GIF, WebP (Max: 5MB)</p>
                                                         </div>
                                                     <?php endif; ?>
@@ -358,23 +384,11 @@ if ($_POST) {
         document.addEventListener('DOMContentLoaded', function() {
             const featuredImageUpload = document.getElementById('featuredImageUpload');
             const featuredImageFile = document.getElementById('featuredImageFile');
-            const featuredImageUrl = document.getElementById('featuredImageUrl');
             
-            // URL input handler - show preview when URL is entered
-            if (featuredImageUrl) {
-                featuredImageUrl.addEventListener('input', function() {
-                    const url = this.value.trim();
-                    if (url && isValidImageUrl(url)) {
-                        updateImagePreview(url);
-                    } else if (!url) {
-                        resetUploadArea();
-                    }
-                });
-                
-                // Show initial preview if URL exists
-                if (featuredImageUrl.value) {
-                    updateImagePreview(featuredImageUrl.value);
-                }
+            // Show initial preview if image exists
+            const currentImage = "<?php echo htmlspecialchars($article_data['featured_image'] ?? ''); ?>";
+            if (currentImage) {
+                updateImagePreview(currentImage);
             }
             
             // Upload handler  
@@ -401,7 +415,16 @@ if ($_POST) {
                         const result = await response.json();
                         
                         if (result.success) {
-                            featuredImageUrl.value = result.url;
+                            // Create hidden input to store the uploaded image URL
+                            let hiddenInput = document.getElementById('uploadedImageUrl');
+                            if (!hiddenInput) {
+                                hiddenInput = document.createElement('input');
+                                hiddenInput.type = 'hidden';
+                                hiddenInput.name = 'featured_image';
+                                hiddenInput.id = 'uploadedImageUrl';
+                                document.querySelector('form').appendChild(hiddenInput);
+                            }
+                            hiddenInput.value = result.url;
                             updateImagePreview(result.url);
                         } else {
                             featuredImageUpload.innerHTML = `<div class="upload-error"><i class="fas fa-exclamation-triangle"></i><p>Upload failed: ${result.message}</p></div>`;
@@ -422,7 +445,7 @@ if ($_POST) {
                 if (featuredImageUpload) {
                     featuredImageUpload.innerHTML = `<div class="upload-placeholder">
                         <i class="fas fa-upload"></i>
-                        <p>Or click here to upload from your PC</p>
+                        <p>Click here to upload an image</p>
                         <p class="text-muted">JPG, PNG, GIF, WebP (Max: 5MB)</p>
                     </div>`;
                 }

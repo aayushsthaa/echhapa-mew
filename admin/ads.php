@@ -1,5 +1,16 @@
 <?php
 require_once '../includes/auth_check.php';
+require_once 'auto-image-assignment.php';
+
+// Function declarations for LSP (functions are defined in auto-image-assignment.php)
+if (!function_exists('autoAssignAdImage')) {
+    /**
+     * Auto-assign image for advertisement if none provided
+     * @param array $adData
+     * @return string|null
+     */
+    function autoAssignAdImage($adData) { /* Implementation in auto-image-assignment.php */ }
+}
 
 $success = '';
 $error = '';
@@ -17,7 +28,16 @@ if ($_POST) {
                 $position = sanitize($_POST['position'] ?? 'sidebar');
                 $content = $_POST['description'] ?? '';
                 $click_url = sanitize($_POST['click_url'] ?? '');
-                $image_url = sanitize($_POST['image_url'] ?? '');
+                $image_url = sanitize($_POST['ad_image'] ?? '');
+                
+                // Auto-assign image if none provided
+                if (empty($image_url)) {
+                    $image_url = autoAssignAdImage([
+                        'title' => $title,
+                        'description' => $content,
+                        'image_url' => ''
+                    ]);
+                }
                 $status = sanitize($_POST['status'] ?? 'active');
                 $start_date = sanitize($_POST['start_date'] ?? '');
                 $end_date = sanitize($_POST['end_date'] ?? '');
@@ -356,12 +376,18 @@ $ads = $ads_stmt->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                         
                         <div class="mb-3">
-                            <label for="image_url" class="form-label">Image URL</label>
-                            <div class="input-group">
-                                <input type="url" class="form-control" name="image_url" id="image_url" 
-                                       placeholder="https://example.com/ad-image.jpg" onchange="updateAdPreview()">
-                                    <i class="fas fa-images"></i> Browse
-                                </button>
+                            <label for="ad_image" class="form-label">Advertisement Image</label>
+                            
+                            <!-- Image Upload Option -->
+                            <div class="ad-image-upload">
+                                <div class="upload-area" id="adImageUpload">
+                                    <div class="upload-placeholder">
+                                        <i class="fas fa-upload"></i>
+                                        <p>Click here to upload an advertisement image</p>
+                                        <p class="text-muted">JPG, PNG, GIF, WebP (Max: 5MB)</p>
+                                    </div>
+                                </div>
+                                <input type="file" id="adImageFile" accept="image/*" style="display: none;">
                             </div>
                         </div>
                         
@@ -410,7 +436,7 @@ $ads = $ads_stmt->fetchAll(PDO::FETCH_ASSOC);
         function updateAdPreview() {
             const title = document.getElementById('title').value;
             const type = document.getElementById('ad_type').value;
-            const imageUrl = document.getElementById('image_url').value;
+            const imageUrl = document.getElementById('adImageUrl') ? document.getElementById('adImageUrl').value : '';
             const content = document.getElementById('description').value;
             const previewContent = document.getElementById('previewContent');
             
@@ -481,7 +507,7 @@ $ads = $ads_stmt->fetchAll(PDO::FETCH_ASSOC);
         
         // Auto-update preview on input change
         document.addEventListener('DOMContentLoaded', function() {
-            const inputs = ['title', 'ad_type', 'image_url', 'description'];
+            const inputs = ['title', 'ad_type', 'description'];
             inputs.forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
@@ -489,6 +515,60 @@ $ads = $ads_stmt->fetchAll(PDO::FETCH_ASSOC);
                     element.addEventListener('change', updateAdPreview);
                 }
             });
+            
+            // Ad Image Upload Handler
+            const adImageUpload = document.getElementById('adImageUpload');
+            const adImageFile = document.getElementById('adImageFile');
+            
+            if (adImageUpload && adImageFile) {
+                adImageUpload.onclick = function() {
+                    adImageFile.click();
+                };
+                
+                adImageFile.onchange = async function() {
+                    const file = this.files[0];
+                    if (!file) return;
+                    
+                    adImageUpload.innerHTML = '<div class="upload-progress"><i class="fas fa-spinner fa-spin"></i> Uploading...</div>';
+                    
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    
+                    try {
+                        const response = await fetch('upload-image.php', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            // Create hidden input to store the uploaded image URL
+                            let hiddenInput = document.getElementById('adImageUrl');
+                            if (!hiddenInput) {
+                                hiddenInput = document.createElement('input');
+                                hiddenInput.type = 'hidden';
+                                hiddenInput.name = 'ad_image';
+                                hiddenInput.id = 'adImageUrl';
+                                document.querySelector('form').appendChild(hiddenInput);
+                            }
+                            hiddenInput.value = result.url;
+                            updateAdImagePreview(result.url);
+                            updateAdPreview(); // Update the main preview
+                        } else {
+                            adImageUpload.innerHTML = `<div class="upload-error"><i class="fas fa-exclamation-triangle"></i><p>Upload failed: ${result.message}</p></div>`;
+                        }
+                    } catch (error) {
+                        adImageUpload.innerHTML = `<div class="upload-error"><i class="fas fa-exclamation-triangle"></i><p>Upload failed: Network error</p></div>`;
+                    }
+                };
+            }
+            
+            function updateAdImagePreview(url) {
+                if (adImageUpload) {
+                    adImageUpload.innerHTML = `<img src="${url}" alt="Ad image" style="max-width: 100%; height: auto;">`;
+                }
+            }
         });
     </script>
 </body>
