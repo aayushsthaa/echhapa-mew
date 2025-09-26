@@ -31,16 +31,44 @@ function displayAd($ad, $track_impression = true) {
     $html = '<div class="advertisement-wrapper" data-ad-id="' . $ad['id'] . '">';
     $html .= '<div class="ad-label">Advertisement</div>';
     
-    if ($ad['type'] === 'banner' && $ad['image_url']) {
+    if ($ad['ad_type'] === 'banner' && $ad['image_url']) {
         $html .= '<a href="' . htmlspecialchars($ad['click_url']) . '" target="_blank" onclick="trackAdClick(' . $ad['id'] . ')" class="ad-banner">';
         $html .= '<img src="' . htmlspecialchars($ad['image_url']) . '" alt="' . htmlspecialchars($ad['title']) . '" class="img-fluid">';
         $html .= '</a>';
-    } elseif ($ad['type'] === 'text') {
-        $html .= '<div class="ad-text">';
+    } elseif ($ad['ad_type'] === 'sidebar') {
+        // Sidebar ads can be image or text-based
+        if ($ad['image_url']) {
+            $html .= '<a href="' . htmlspecialchars($ad['click_url']) . '" target="_blank" onclick="trackAdClick(' . $ad['id'] . ')" class="ad-sidebar-image">';
+            $html .= '<img src="' . htmlspecialchars($ad['image_url']) . '" alt="' . htmlspecialchars($ad['title']) . '" class="img-fluid">';
+            $html .= '</a>';
+        } else {
+            $html .= '<div class="ad-sidebar-text">';
+            $html .= '<h6>' . htmlspecialchars($ad['title']) . '</h6>';
+            $html .= '<p>' . nl2br(htmlspecialchars($ad['description'])) . '</p>';
+            if ($ad['click_url']) {
+                $html .= '<a href="' . htmlspecialchars($ad['click_url']) . '" target="_blank" onclick="trackAdClick(' . $ad['id'] . ')" class="btn btn-primary btn-sm">Learn More</a>';
+            }
+            $html .= '</div>';
+        }
+    } elseif ($ad['ad_type'] === 'inline') {
+        $html .= '<div class="ad-inline">';
+        if ($ad['image_url']) {
+            $html .= '<a href="' . htmlspecialchars($ad['click_url']) . '" target="_blank" onclick="trackAdClick(' . $ad['id'] . ')" class="ad-inline-image">';
+            $html .= '<img src="' . htmlspecialchars($ad['image_url']) . '" alt="' . htmlspecialchars($ad['title']) . '" class="img-fluid">';
+            $html .= '</a>';
+        }
         $html .= '<h6>' . htmlspecialchars($ad['title']) . '</h6>';
         $html .= '<p>' . nl2br(htmlspecialchars($ad['description'])) . '</p>';
+        $html .= '</div>';
+    } elseif ($ad['ad_type'] === 'popup') {
+        $html .= '<div class="ad-popup" style="border: 2px solid #ddd; padding: 15px; background: #f9f9f9;">';
+        $html .= '<div class="ad-popup-header"><strong>' . htmlspecialchars($ad['title']) . '</strong></div>';
+        if ($ad['image_url']) {
+            $html .= '<img src="' . htmlspecialchars($ad['image_url']) . '" alt="' . htmlspecialchars($ad['title']) . '" class="img-fluid mb-2">';
+        }
+        $html .= '<p>' . nl2br(htmlspecialchars($ad['description'])) . '</p>';
         if ($ad['click_url']) {
-            $html .= '<a href="' . htmlspecialchars($ad['click_url']) . '" target="_blank" onclick="trackAdClick(' . $ad['id'] . ')" class="btn btn-primary btn-sm">Learn More</a>';
+            $html .= '<a href="' . htmlspecialchars($ad['click_url']) . '" target="_blank" onclick="trackAdClick(' . $ad['id'] . ')" class="btn btn-warning btn-sm">Visit Now</a>';
         }
         $html .= '</div>';
     }

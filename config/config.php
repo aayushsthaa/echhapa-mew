@@ -2,6 +2,11 @@
 // Start session
 session_start();
 
+// Debug mode for testing
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // Site configuration
 define('SITE_NAME', 'Professional News Portal');
 define('SITE_URL', $_SERVER['HTTP_HOST'] ?? 'localhost:5000');

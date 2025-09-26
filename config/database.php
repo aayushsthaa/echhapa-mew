@@ -57,6 +57,9 @@ class Database {
                 $this->insertSampleData($conn);
             }
             
+            // Run database migrations for existing installations
+            $this->runMigrations($conn);
+            
             // Convert existing articles to JSON format
             $this->convertArticlesToJsonFormat($conn);
             
@@ -162,6 +165,32 @@ class Database {
         return $blocks;
     }
 
+    private function runMigrations($conn) {
+        try {
+            // Migration 1: Update articles status constraint to include 'scheduled'
+            // This is idempotent - safe to run multiple times
+            $conn->exec("
+                -- Drop the old constraint if it exists
+                ALTER TABLE articles DROP CONSTRAINT IF EXISTS articles_status_check;
+                
+                -- Add the new constraint with all 4 statuses including 'scheduled'
+                ALTER TABLE articles ADD CONSTRAINT articles_status_check 
+                CHECK (status IN ('draft', 'published', 'archived', 'scheduled'));
+            ");
+            
+            // Migration 2: Add color column to categories table
+            // This is idempotent - safe to run multiple times
+            $conn->exec("
+                -- Add color column if it doesn't exist
+                ALTER TABLE categories ADD COLUMN IF NOT EXISTS color VARCHAR(20) DEFAULT '#007bff';
+            ");
+            
+        } catch(PDOException $e) {
+            // Log migration errors but don't fail the initialization
+            error_log("Database migration error: " . $e->getMessage());
+        }
+    }
+
     private function createTables($conn) {
         $sql = "
         -- Create users table
@@ -206,7 +235,7 @@ class Database {
             featured_image_alt VARCHAR(255),
             category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
             author_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
-            status VARCHAR(20) DEFAULT 'draft' CHECK (status IN ('draft', 'published', 'archived')),
+            status VARCHAR(20) DEFAULT 'draft' CHECK (status IN ('draft', 'published', 'archived', 'scheduled')),
             is_featured BOOLEAN DEFAULT false,
             is_breaking BOOLEAN DEFAULT false,
             views INTEGER DEFAULT 0,
